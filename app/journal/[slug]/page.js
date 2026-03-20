@@ -2,6 +2,8 @@ import Link from "next/link";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getJournalPostBySlug, getProjectBySlug, getSiteData } from "@/lib/site-data";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const siteData = await getSiteData();
   const post = getJournalPostBySlug(siteData, params.slug);

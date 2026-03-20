@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { assertAdminRequest } from "@/lib/auth";
 import { getSiteData, saveSiteData } from "@/lib/site-data";
 
@@ -13,6 +14,19 @@ export async function PUT(request) {
     await assertAdminRequest();
     const body = await request.json();
     const savedSiteData = await saveSiteData(body);
+
+    revalidatePath("/");
+    revalidatePath("/work");
+    revalidatePath("/contact");
+
+    for (const project of savedSiteData.projects || []) {
+      if (project.slug) revalidatePath(`/work/${project.slug}`);
+    }
+
+    for (const post of savedSiteData.journalPosts || []) {
+      if (post.slug) revalidatePath(`/journal/${post.slug}`);
+    }
+
     return NextResponse.json(savedSiteData);
   } catch (error) {
     return NextResponse.json(

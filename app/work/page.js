@@ -2,6 +2,8 @@ import { PortfolioGrid } from "@/components/PortfolioGrid";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getSiteData } from "@/lib/site-data";
 
+export const dynamic = "force-dynamic";
+
 export default async function WorkPage() {
   const siteData = await getSiteData();
 

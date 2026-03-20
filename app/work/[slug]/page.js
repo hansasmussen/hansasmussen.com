@@ -3,6 +3,8 @@ import { PublicLayout } from "@/components/PublicLayout";
 import { ProjectMediaGrid } from "@/components/ProjectMediaGrid";
 import { getProjectBySlug, getSiteData } from "@/lib/site-data";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const siteData = await getSiteData();
   const project = getProjectBySlug(siteData, params.slug);

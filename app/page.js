@@ -2,6 +2,8 @@ import { Carousel } from "@/components/Carousel";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getFeaturedSlides, getSiteData } from "@/lib/site-data";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const siteData = await getSiteData();
   const slides = getFeaturedSlides(siteData);
