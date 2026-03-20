@@ -4,7 +4,9 @@ import { useState } from "react";
 
 export function ContactForm() {
   const [status, setStatus] = useState("");
+  const [statusKind, setStatusKind] = useState("idle");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [startedAt] = useState(() => Date.now());
 
   return (
     <form
@@ -17,6 +19,7 @@ export function ContactForm() {
         const formData = new FormData(form);
 
         setIsSubmitting(true);
+        setStatusKind("pending");
         setStatus("Sending...");
 
         try {
@@ -31,6 +34,7 @@ export function ContactForm() {
               email: String(formData.get("email") || ""),
               message: String(formData.get("message") || ""),
               website: String(formData.get("website") || ""),
+              submittedAt: Number(formData.get("submitted_at") || 0),
             }),
           });
 
@@ -40,9 +44,11 @@ export function ContactForm() {
             throw new Error(payload?.error || "Message delivery failed.");
           }
 
+          setStatusKind("success");
           setStatus("Thanks. Your message has been sent.");
           form.reset();
         } catch (error) {
+          setStatusKind("error");
           setStatus(error instanceof Error ? error.message : "Message delivery failed.");
         } finally {
           setIsSubmitting(false);
@@ -57,6 +63,7 @@ export function ContactForm() {
         autoComplete="off"
         aria-hidden="true"
       />
+      <input type="hidden" name="submitted_at" value={startedAt} />
       <div className="name-grid">
         <label>
           Name
@@ -78,7 +85,7 @@ export function ContactForm() {
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Sending..." : "Send"}
       </button>
-      <p className="form-status" aria-live="polite">
+      <p className={`form-status is-${statusKind}`} aria-live="polite">
         {status}
       </p>
     </form>

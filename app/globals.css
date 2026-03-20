@@ -1139,6 +1139,19 @@ h2 {
   margin: -4px 0 0;
   color: var(--muted);
   font-size: 0.92rem;
+  min-height: 1.4em;
+}
+
+.form-status.is-pending {
+  color: var(--muted);
+}
+
+.form-status.is-success {
+  color: var(--text);
+}
+
+.form-status.is-error {
+  color: #b5441c;
 }
 
 .campaign-shell {

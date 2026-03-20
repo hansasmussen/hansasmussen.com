@@ -41,14 +41,30 @@ export async function POST(request) {
     const email = String(body.email || "").trim();
     const message = String(body.message || "").trim();
     const website = String(body.website || "").trim();
+    const submittedAt = Number(body.submittedAt || 0);
 
     if (website) {
+      return NextResponse.json({ ok: true });
+    }
+
+    if (submittedAt && Date.now() - submittedAt < 2500) {
       return NextResponse.json({ ok: true });
     }
 
     if (!firstName || !lastName || !email || !message) {
       return NextResponse.json(
         { error: "Please fill out all required fields." },
+        { status: 400 }
+      );
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+    }
+
+    if (message.length < 10) {
+      return NextResponse.json(
+        { error: "Please write a slightly longer message." },
         { status: 400 }
       );
     }
@@ -90,8 +106,7 @@ export async function POST(request) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Mail delivery failed: ${errorText}`);
+      throw new Error("Message delivery failed. Please try again in a moment.");
     }
 
     return NextResponse.json({ ok: true });
