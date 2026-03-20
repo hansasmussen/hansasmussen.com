@@ -11,7 +11,7 @@ function isProtectedPath(pathname) {
   );
 }
 
-export async function middleware(request) {
+export async function proxy(request) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -33,7 +33,9 @@ export async function middleware(request) {
               headers: request.headers,
             },
           });
-          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
         },
       },
     }
