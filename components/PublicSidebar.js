@@ -44,7 +44,9 @@ export function PublicSidebar() {
           </p>
         </div>
 
-        <p className="public-sidebar-footer">hansasmussen.com / all rights reserved</p>
+        <p className="public-sidebar-footer">
+          hansasmussen.com is a part of www.ps-content.dk - all rights reservered
+        </p>
       </div>
     </aside>
   );
