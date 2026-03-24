@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PortfolioGrid } from "@/components/PortfolioGrid";
+import { AdminPortfolioEditorGrid } from "@/components/AdminPortfolioEditorGrid";
 import { defaultSiteData } from "@/lib/default-site-data";
 import { normalizeSiteData } from "@/lib/site-data";
 
@@ -138,7 +138,6 @@ export function AdminClient({ initialSiteData }) {
     }
   };
 
-  const previewVisible = activeTab === "portfolio";
   const projects = siteData.projects || [];
   const journalPosts = siteData.journalPosts || [];
   const [expandedProjectSlug, setExpandedProjectSlug] = useState(
@@ -431,76 +430,14 @@ export function AdminClient({ initialSiteData }) {
                 ))}
               </section>
 
-              <section className="admin-list" aria-label="Portfolio items">
-                {siteData.portfolioItems.map((item) => (
-                  <article
-                    key={item.id}
-                    className={`admin-item ${draggedId === item.id ? "is-dragging" : ""}`}
-                    draggable
-                    onDragStart={() => setDraggedId(item.id)}
-                    onDragEnd={() => setDraggedId(null)}
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={() => {
-                      if (draggedId) reorderItems(draggedId, item.id);
-                      setDraggedId(null);
-                    }}
-                  >
-                    <div className="admin-item-panel">
-                      <div className="admin-item-copy">
-                        <strong>{item.title}</strong>
-                        <span>
-                          {item.mediaType === "video" ? "Video / " : ""}
-                          {item.span === "wide" ? "Wide" : "Single"}
-                          {item.featured ? " / Carousel" : ""}
-                        </span>
-                      </div>
-
-                      <form
-                        className="admin-link-form"
-                        onSubmit={(event) => {
-                          event.preventDefault();
-                          const formData = new FormData(event.currentTarget);
-                          updateItem(item.id, (current) => ({
-                            ...current,
-                            projectSlug: String(formData.get("projectSlug") || "") || null,
-                            journalSlug: String(formData.get("journalSlug") || "") || null,
-                          }));
-                        }}
-                      >
-                        <div className="admin-link-grid">
-                          <label>
-                            Project slug
-                            <input name="projectSlug" defaultValue={item.projectSlug || ""} />
-                          </label>
-                          <div className="admin-item-actions">
-                            <button
-                              type="button"
-                              onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
-                            >
-                              {item.featured ? "Remove from carousel" : "Carousel"}
-                            </button>
-                            <button type="button" onClick={() => removeItem(item.id)}>
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                        <label>
-                          Journal slug
-                          <input name="journalSlug" defaultValue={item.journalSlug || ""} />
-                        </label>
-                        <button type="submit">Save links</button>
-                      </form>
-                    </div>
-                    <div className="admin-item-media">
-                      {item.mediaType === "video" ? (
-                        <video src={item.src} muted playsInline />
-                      ) : (
-                        <img src={item.src} alt={item.alt} />
-                      )}
-                    </div>
-                  </article>
-                ))}
-              </section>
+              <AdminPortfolioEditorGrid
+                items={siteData.portfolioItems}
+                draggedId={draggedId}
+                setDraggedId={setDraggedId}
+                reorderItems={reorderItems}
+                updateItem={updateItem}
+                removeItem={removeItem}
+              />
             </section>
           ) : null}
 
@@ -824,14 +761,6 @@ export function AdminClient({ initialSiteData }) {
         </section>
       </main>
 
-      {previewVisible ? (
-        <section className="work-gallery admin-gallery">
-          <div className="work-gallery-inner">
-            <p className="eyebrow admin-preview-label">Live preview</p>
-            <PortfolioGrid items={siteData.portfolioItems} className="admin-preview-grid" preview />
-          </div>
-        </section>
-      ) : null}
     </>
   );
 }
