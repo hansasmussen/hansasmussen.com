@@ -1,5 +1,48 @@
 import { NextResponse } from "next/server";
 
+const CONTACT_WINDOW_MS = 15 * 60 * 1000;
+const CONTACT_MAX_ATTEMPTS = 3;
+const CONTACT_COOLDOWN_MS = 45 * 1000;
+
+function getRateLimitStore() {
+  if (!globalThis.__contactRateLimitStore) {
+    globalThis.__contactRateLimitStore = new Map();
+  }
+
+  return globalThis.__contactRateLimitStore;
+}
+
+function getClientKey(request, email) {
+  const forwardedFor = request.headers.get("x-forwarded-for") || "";
+  const ip = forwardedFor.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+  return `${ip}:${String(email || "").trim().toLowerCase()}`;
+}
+
+function getRateLimitMessage(now, attempts) {
+  const recentAttempts = attempts.filter((timestamp) => now - timestamp < CONTACT_WINDOW_MS);
+  const lastAttempt = recentAttempts[recentAttempts.length - 1] || 0;
+
+  if (lastAttempt && now - lastAttempt < CONTACT_COOLDOWN_MS) {
+    return "Please wait a short moment before sending another message.";
+  }
+
+  if (recentAttempts.length >= CONTACT_MAX_ATTEMPTS) {
+    return "Too many messages have been sent from this connection. Please try again a little later.";
+  }
+
+  return null;
+}
+
+function recordAttempt(key, now) {
+  const store = getRateLimitStore();
+  const attempts = store.get(key) || [];
+  const nextAttempts = attempts
+    .filter((timestamp) => now - timestamp < CONTACT_WINDOW_MS)
+    .concat(now);
+
+  store.set(key, nextAttempts);
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -69,6 +112,22 @@ export async function POST(request) {
       );
     }
 
+    if (request.cookies.get("contact_cooldown")) {
+      return NextResponse.json(
+        { error: "Please wait a short moment before sending another message." },
+        { status: 429 }
+      );
+    }
+
+    const now = Date.now();
+    const rateLimitKey = getClientKey(request, email);
+    const attempts = getRateLimitStore().get(rateLimitKey) || [];
+    const rateLimitMessage = getRateLimitMessage(now, attempts);
+
+    if (rateLimitMessage) {
+      return NextResponse.json({ error: rateLimitMessage }, { status: 429 });
+    }
+
     const resendApiKey = process.env.RESEND_API_KEY;
     const from = process.env.CONTACT_FROM_EMAIL;
     const to = process.env.CONTACT_TO_EMAIL || "ad@packshoot.dk";
@@ -109,7 +168,18 @@ export async function POST(request) {
       throw new Error("Message delivery failed. Please try again in a moment.");
     }
 
-    return NextResponse.json({ ok: true });
+    recordAttempt(rateLimitKey, now);
+
+    const jsonResponse = NextResponse.json({ ok: true });
+    jsonResponse.cookies.set("contact_cooldown", "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true,
+      maxAge: Math.ceil(CONTACT_COOLDOWN_MS / 1000),
+      path: "/",
+    });
+
+    return jsonResponse;
   } catch (error) {
     return NextResponse.json(
       {

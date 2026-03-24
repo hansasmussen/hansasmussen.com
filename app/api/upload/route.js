@@ -2,6 +2,22 @@ import { NextResponse } from "next/server";
 import { assertAdminRequest } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
+const ALLOWED_CONTEXTS = new Set(["portfolio", "project"]);
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+]);
+const ALLOWED_VIDEO_TYPES = new Set([
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
+]);
+const IMAGE_MAX_BYTES = 20 * 1024 * 1024;
+const VIDEO_MAX_BYTES = 120 * 1024 * 1024;
+
 function sanitizeSegment(value) {
   return String(value || "")
     .toLowerCase()
@@ -23,6 +39,28 @@ function buildStoragePath({ file, context, projectSlug }) {
   return `portfolio/portfolio-item-${dateStamp}-${shortId}.${extension}`;
 }
 
+function validateUpload(file, context) {
+  if (!ALLOWED_CONTEXTS.has(context)) {
+    throw new Error("Invalid upload context.");
+  }
+
+  const isImage = ALLOWED_IMAGE_TYPES.has(file.type);
+  const isVideo = ALLOWED_VIDEO_TYPES.has(file.type);
+
+  if (!isImage && !isVideo) {
+    throw new Error("Only JPG, PNG, WebP, GIF, AVIF, MP4, MOV and WebM files are allowed.");
+  }
+
+  const maxBytes = isVideo ? VIDEO_MAX_BYTES : IMAGE_MAX_BYTES;
+  if (file.size > maxBytes) {
+    throw new Error(
+      isVideo
+        ? "Video files must be 120 MB or smaller."
+        : "Image files must be 20 MB or smaller."
+    );
+  }
+}
+
 export async function POST(request) {
   try {
     await assertAdminRequest();
@@ -34,6 +72,8 @@ export async function POST(request) {
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No image file provided." }, { status: 400 });
     }
+
+    validateUpload(file, context);
 
     const bucket = process.env.SUPABASE_STORAGE_BUCKET || "portfolio-images";
     const filePath = buildStoragePath({ file, context, projectSlug });
