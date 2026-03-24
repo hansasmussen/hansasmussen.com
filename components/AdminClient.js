@@ -157,6 +157,26 @@ async function requestAltText(payload) {
   return response.json();
 }
 
+function buildNextUploadTitle(existingItems, mediaType = "image", context = "portfolio") {
+  const baseLabel =
+    context === "project"
+      ? mediaType === "video"
+        ? "Project Video"
+        : "Project Image"
+      : mediaType === "video"
+        ? "Portfolio Video"
+        : "Portfolio Image";
+
+  let counter = 1;
+  const existingTitles = new Set((existingItems || []).map((item) => item.title));
+
+  while (existingTitles.has(`${baseLabel} ${counter}`)) {
+    counter += 1;
+  }
+
+  return `${baseLabel} ${counter}`;
+}
+
 async function enrichItemWithAutoAlt(item) {
   if (item.mediaType === "video") {
     return item;
@@ -178,8 +198,10 @@ async function enrichItemWithAutoAlt(item) {
   }
 }
 
-async function fileToPortfolioItem(file, uploadedAsset) {
-  const title = file.name.replace(/\.[^.]+$/, "");
+async function fileToPortfolioItem(file, uploadedAsset, options = {}) {
+  const title =
+    options.title ||
+    buildNextUploadTitle(options.existingItems || [], file.type.startsWith("video/") ? "video" : "image", options.context);
   const localPreviewUrl = URL.createObjectURL(file);
   const dimensions = file.type.startsWith("video/")
     ? await measureVideo(localPreviewUrl)
@@ -290,7 +312,10 @@ export function AdminClient({ initialSiteData }) {
         nextQueueItems[index].status = "Uploading";
         setQueueItems([...nextQueueItems]);
         const uploadedAsset = await uploadFile(optimizedFile, { context: "portfolio" });
-        const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset);
+        const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset, {
+          existingItems: [...siteData.portfolioItems, ...uploads],
+          context: "portfolio",
+        });
         const uploadedItemWithAlt = await enrichItemWithAutoAlt(uploadedItem);
         uploads.push(uploadedItem);
         uploads[uploads.length - 1] = uploadedItemWithAlt;
@@ -342,7 +367,10 @@ export function AdminClient({ initialSiteData }) {
           context: "project",
           projectSlug,
         });
-        const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset);
+        const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset, {
+          existingItems: project.media || [],
+          context: "project",
+        });
         const uploadedItemWithAlt = await enrichItemWithAutoAlt({
           ...uploadedItem,
           projectSlug,
