@@ -157,6 +157,8 @@ a {
   margin: 0 auto;
   padding: 18px 0 56px;
   text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 .intro.work-intro .work-manifesto {
@@ -189,6 +191,14 @@ a {
   justify-content: flex-end;
   margin-top: 28px;
   padding-right: 22px;
+  position: relative;
+  z-index: 2;
+}
+
+.work-intro-overlay-lift {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .work-view-link {
@@ -769,6 +779,35 @@ h2 {
   gap: 22px;
 }
 
+.admin-accordion {
+  gap: 0;
+}
+
+.admin-accordion-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-accordion.is-open .admin-accordion-trigger {
+  margin-bottom: 18px;
+}
+
+.admin-accordion-icon {
+  color: var(--text);
+  font-size: 1.6rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
 .admin-project-media {
   display: grid;
   gap: 14px;
@@ -960,7 +999,12 @@ h2 {
 }
 
 .admin-item {
-  grid-template-columns: 72px minmax(0, 1fr) auto;
+  position: relative;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .upload-queue-item video,
@@ -973,9 +1017,10 @@ h2 {
 
 .admin-item img,
 .admin-item video {
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .upload-queue-copy,
@@ -988,7 +1033,7 @@ h2 {
 .admin-link-form {
   display: grid;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .admin-link-form label {
@@ -1011,7 +1056,7 @@ h2 {
 .admin-link-form button {
   width: fit-content;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--text);
   padding: 8px 12px;
   border-radius: 999px;
@@ -1034,6 +1079,34 @@ h2 {
 .admin-item-copy span {
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+.admin-item-panel {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(226, 87, 28, 0.14);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 28px rgba(226, 87, 28, 0.08);
+}
+
+.admin-item-media {
+  position: relative;
+  z-index: 1;
+  min-height: 240px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.admin-link-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
 }
 
 .admin-item-actions {
@@ -2138,7 +2211,7 @@ h2 {
   }
 
   .admin-item {
-    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 0;
   }
 
   .admin-project-media-item {
@@ -2146,7 +2219,10 @@ h2 {
   }
 
   .admin-item-actions {
-    grid-column: 1 / -1;
     justify-content: flex-start;
+  }
+
+  .admin-link-grid {
+    grid-template-columns: 1fr;
   }
 }

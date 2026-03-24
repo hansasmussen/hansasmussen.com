@@ -141,6 +141,9 @@ export function AdminClient({ initialSiteData }) {
   const previewVisible = activeTab === "portfolio";
   const projects = siteData.projects || [];
   const journalPosts = siteData.journalPosts || [];
+  const [expandedProjectSlug, setExpandedProjectSlug] = useState(
+    () => (normalizeSiteData(initialSiteData).projects || [])[0]?.slug || null
+  );
 
   const forms = useMemo(
     () => ({
@@ -442,18 +445,16 @@ export function AdminClient({ initialSiteData }) {
                       setDraggedId(null);
                     }}
                   >
-                    {item.mediaType === "video" ? (
-                      <video src={item.src} muted playsInline />
-                    ) : (
-                      <img src={item.src} alt={item.alt} />
-                    )}
-                    <div className="admin-item-copy">
-                      <strong>{item.title}</strong>
-                      <span>
-                        {item.mediaType === "video" ? "Video / " : ""}
-                        {item.span === "wide" ? "Wide" : "Single"}
-                        {item.featured ? " / Carousel" : ""}
-                      </span>
+                    <div className="admin-item-panel">
+                      <div className="admin-item-copy">
+                        <strong>{item.title}</strong>
+                        <span>
+                          {item.mediaType === "video" ? "Video / " : ""}
+                          {item.span === "wide" ? "Wide" : "Single"}
+                          {item.featured ? " / Carousel" : ""}
+                        </span>
+                      </div>
+
                       <form
                         className="admin-link-form"
                         onSubmit={(event) => {
@@ -466,10 +467,23 @@ export function AdminClient({ initialSiteData }) {
                           }));
                         }}
                       >
-                        <label>
-                          Project slug
-                          <input name="projectSlug" defaultValue={item.projectSlug || ""} />
-                        </label>
+                        <div className="admin-link-grid">
+                          <label>
+                            Project slug
+                            <input name="projectSlug" defaultValue={item.projectSlug || ""} />
+                          </label>
+                          <div className="admin-item-actions">
+                            <button
+                              type="button"
+                              onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
+                            >
+                              {item.featured ? "Remove from carousel" : "Carousel"}
+                            </button>
+                            <button type="button" onClick={() => removeItem(item.id)}>
+                              Remove
+                            </button>
+                          </div>
+                        </div>
                         <label>
                           Journal slug
                           <input name="journalSlug" defaultValue={item.journalSlug || ""} />
@@ -477,13 +491,12 @@ export function AdminClient({ initialSiteData }) {
                         <button type="submit">Save links</button>
                       </form>
                     </div>
-                    <div className="admin-item-actions">
-                      <button type="button" onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}>
-                        {item.featured ? "Remove from carousel" : "Carousel"}
-                      </button>
-                      <button type="button" onClick={() => removeItem(item.id)}>
-                        Remove
-                      </button>
+                    <div className="admin-item-media">
+                      {item.mediaType === "video" ? (
+                        <video src={item.src} muted playsInline />
+                      ) : (
+                        <img src={item.src} alt={item.alt} />
+                      )}
                     </div>
                   </article>
                 ))}
@@ -533,196 +546,213 @@ export function AdminClient({ initialSiteData }) {
           {activeTab === "projects" ? (
             <section className="admin-content-stack">
               {projects.map((project, index) => (
-                <section key={project.slug} className="admin-content-editor">
-                  <div className="admin-section-heading">
-                    <p className="eyebrow">Project {index + 1}</p>
-                    <h2>{project.title}</h2>
-                  </div>
-                  <form
-                    className="admin-copy-form"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      const formData = new FormData(event.currentTarget);
-                      const nextProjects = projects.map((currentProject) =>
-                        currentProject.slug === project.slug
-                          ? {
-                              ...currentProject,
-                              title: String(formData.get("title") || ""),
-                              slug: String(formData.get("slug") || ""),
-                              summary: String(formData.get("summary") || ""),
-                              technicalDetails: String(formData.get("technicalDetails") || ""),
-                              body: String(formData.get("body") || ""),
-                              journalSlug: String(formData.get("journalSlug") || "") || null,
-                            }
-                          : currentProject
-                      );
-
-                      void persist(
-                        {
-                          ...siteData,
-                          projects: nextProjects,
-                        },
-                        `Saved project: ${project.title}`
-                      );
-                    }}
+                <section
+                  key={project.slug}
+                  className={`admin-content-editor admin-accordion ${expandedProjectSlug === project.slug ? "is-open" : ""}`}
+                >
+                  <button
+                    className="admin-accordion-trigger"
+                    type="button"
+                    onClick={() =>
+                      setExpandedProjectSlug((current) => (current === project.slug ? null : project.slug))
+                    }
                   >
-                    <label>
-                      Project title
-                      <input name="title" defaultValue={project.title} />
-                    </label>
-                    <label>
-                      Slug
-                      <input name="slug" defaultValue={project.slug} />
-                    </label>
-                    <label>
-                      Short summary
-                      <textarea name="summary" rows="3" maxLength={100} defaultValue={project.summary} />
-                    </label>
-                    <label>
-                      Technical details
-                      <textarea name="technicalDetails" rows="5" defaultValue={project.technicalDetails} />
-                    </label>
-                    <label>
-                      Project intro/body
-                      <textarea name="body" rows="6" defaultValue={project.body} />
-                    </label>
-                    <div className="admin-copy-actions">
-                      <button
-                        className="admin-save admin-rewrite"
-                        type="button"
-                        disabled={rewritingProjectSlug === project.slug}
-                        onClick={async (event) => {
-                          const form = event.currentTarget.form;
-                          if (!form) return;
-
-                          const summaryField = form.elements.namedItem("summary");
-                          const bodyField = form.elements.namedItem("body");
-                          const titleField = form.elements.namedItem("title");
-
-                          if (
-                            !(summaryField instanceof HTMLTextAreaElement) ||
-                            !(bodyField instanceof HTMLTextAreaElement) ||
-                            !(titleField instanceof HTMLInputElement)
-                          ) {
-                            setStatus("Could not find the project fields to rewrite.");
-                            return;
-                          }
-
-                          const body = bodyField.value.trim();
-                          if (!body) {
-                            setStatus("Write a project intro/body first, then ask for a rewrite.");
-                            return;
-                          }
-
-                          setRewritingProjectSlug(project.slug);
-                          setStatus(`Rewriting ${project.title} with a gonzo edge...`);
-
-                          try {
-                            const rewritten = await rewriteProjectText({
-                              title: titleField.value,
-                              summary: summaryField.value,
-                              body,
-                            });
-
-                            summaryField.value = rewritten.summary || "";
-                            bodyField.value = rewritten.body || body;
-                            setStatus(`Rewrite ready for ${project.title}. Review it, then save if you want to keep it.`);
-                          } catch (error) {
-                            setStatus(
-                              error instanceof Error
-                                ? `Rewrite failed: ${error.message}`
-                                : "Rewrite failed."
-                            );
-                          } finally {
-                            setRewritingProjectSlug(null);
-                          }
-                        }}
-                      >
-                        {rewritingProjectSlug === project.slug ? "Rewriting..." : "Rewrite with gonzo flair"}
-                      </button>
+                    <div className="admin-section-heading">
+                      <p className="eyebrow">Project {index + 1}</p>
+                      <h2>{project.title}</h2>
                     </div>
-                    <label>
-                      Journal slug
-                      <input name="journalSlug" defaultValue={project.journalSlug || ""} />
-                    </label>
-                    <div className="admin-project-media">
-                      <div className="admin-project-media-header">
-                        <p className="eyebrow">Project media</p>
-                        <label className="admin-upload admin-project-upload">
-                          <strong>Add media to series</strong>
-                          <span>Upload images or video for this landing page</span>
-                          <input
-                            type="file"
-                            accept="image/*,video/*"
-                            multiple
-                            onChange={(event) => handleProjectFiles(project.slug, event.target.files)}
-                          />
-                        </label>
-                      </div>
+                    <span className="admin-accordion-icon" aria-hidden="true">
+                      {expandedProjectSlug === project.slug ? "−" : "+"}
+                    </span>
+                  </button>
 
-                      {projectQueueItems.length ? (
-                        <section className="upload-queue" aria-label="Project upload queue">
-                          {projectQueueItems.map((item) => (
-                            <article key={item.id} className={`upload-queue-item upload-status-${item.status.toLowerCase()}`}>
-                              {item.mediaType === "video" ? (
-                                <video src={item.preview} muted playsInline />
+                  {expandedProjectSlug === project.slug ? (
+                    <form
+                      className="admin-copy-form"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const formData = new FormData(event.currentTarget);
+                        const nextProjects = projects.map((currentProject) =>
+                          currentProject.slug === project.slug
+                            ? {
+                                ...currentProject,
+                                title: String(formData.get("title") || ""),
+                                slug: String(formData.get("slug") || ""),
+                                summary: String(formData.get("summary") || ""),
+                                technicalDetails: String(formData.get("technicalDetails") || ""),
+                                body: String(formData.get("body") || ""),
+                                journalSlug: String(formData.get("journalSlug") || "") || null,
+                              }
+                            : currentProject
+                        );
+
+                        void persist(
+                          {
+                            ...siteData,
+                            projects: nextProjects,
+                          },
+                          `Saved project: ${project.title}`
+                        );
+                      }}
+                    >
+                      <label>
+                        Project title
+                        <input name="title" defaultValue={project.title} />
+                      </label>
+                      <label>
+                        Slug
+                        <input name="slug" defaultValue={project.slug} />
+                      </label>
+                      <label>
+                        Short summary
+                        <textarea name="summary" rows="3" maxLength={100} defaultValue={project.summary} />
+                      </label>
+                      <label>
+                        Technical details
+                        <textarea name="technicalDetails" rows="5" defaultValue={project.technicalDetails} />
+                      </label>
+                      <label>
+                        Project intro/body
+                        <textarea name="body" rows="6" defaultValue={project.body} />
+                      </label>
+                      <div className="admin-copy-actions">
+                        <button
+                          className="admin-save admin-rewrite"
+                          type="button"
+                          disabled={rewritingProjectSlug === project.slug}
+                          onClick={async (event) => {
+                            const form = event.currentTarget.form;
+                            if (!form) return;
+
+                            const summaryField = form.elements.namedItem("summary");
+                            const bodyField = form.elements.namedItem("body");
+                            const titleField = form.elements.namedItem("title");
+
+                            if (
+                              !(summaryField instanceof HTMLTextAreaElement) ||
+                              !(bodyField instanceof HTMLTextAreaElement) ||
+                              !(titleField instanceof HTMLInputElement)
+                            ) {
+                              setStatus("Could not find the project fields to rewrite.");
+                              return;
+                            }
+
+                            const body = bodyField.value.trim();
+                            if (!body) {
+                              setStatus("Write a project intro/body first, then ask for a rewrite.");
+                              return;
+                            }
+
+                            setRewritingProjectSlug(project.slug);
+                            setStatus(`Rewriting ${project.title} with a gonzo edge...`);
+
+                            try {
+                              const rewritten = await rewriteProjectText({
+                                title: titleField.value,
+                                summary: summaryField.value,
+                                body,
+                              });
+
+                              summaryField.value = rewritten.summary || "";
+                              bodyField.value = rewritten.body || body;
+                              setStatus(`Rewrite ready for ${project.title}. Review it, then save if you want to keep it.`);
+                            } catch (error) {
+                              setStatus(
+                                error instanceof Error
+                                  ? `Rewrite failed: ${error.message}`
+                                  : "Rewrite failed."
+                              );
+                            } finally {
+                              setRewritingProjectSlug(null);
+                            }
+                          }}
+                        >
+                          {rewritingProjectSlug === project.slug ? "Rewriting..." : "Rewrite with gonzo flair"}
+                        </button>
+                      </div>
+                      <label>
+                        Journal slug
+                        <input name="journalSlug" defaultValue={project.journalSlug || ""} />
+                      </label>
+                      <div className="admin-project-media">
+                        <div className="admin-project-media-header">
+                          <p className="eyebrow">Project media</p>
+                          <label className="admin-upload admin-project-upload">
+                            <strong>Add media to series</strong>
+                            <span>Upload images or video for this landing page</span>
+                            <input
+                              type="file"
+                              accept="image/*,video/*"
+                              multiple
+                              onChange={(event) => handleProjectFiles(project.slug, event.target.files)}
+                            />
+                          </label>
+                        </div>
+
+                        {projectQueueItems.length ? (
+                          <section className="upload-queue" aria-label="Project upload queue">
+                            {projectQueueItems.map((item) => (
+                              <article key={item.id} className={`upload-queue-item upload-status-${item.status.toLowerCase()}`}>
+                                {item.mediaType === "video" ? (
+                                  <video src={item.preview} muted playsInline />
+                                ) : (
+                                  <img src={item.preview} alt={item.name} />
+                                )}
+                                <div className="upload-queue-copy">
+                                  <strong>{item.name}</strong>
+                                  <span>{item.status}</span>
+                                </div>
+                              </article>
+                            ))}
+                          </section>
+                        ) : null}
+
+                        <div className="admin-project-media-list">
+                          {(project.media || []).map((mediaItem, mediaIndex) => (
+                            <article key={`${project.slug}-media-${mediaIndex + 1}`} className="admin-project-media-item">
+                              {mediaItem.mediaType === "video" ? (
+                                <video src={mediaItem.src} muted playsInline />
                               ) : (
-                                <img src={item.preview} alt={item.name} />
+                                <img src={mediaItem.src} alt={mediaItem.alt} />
                               )}
-                              <div className="upload-queue-copy">
-                                <strong>{item.name}</strong>
-                                <span>{item.status}</span>
+                              <div className="admin-project-media-copy">
+                                <strong>{mediaItem.alt || `Media ${mediaIndex + 1}`}</strong>
+                                <span>{mediaItem.mediaType === "video" ? "Video" : "Image"}</span>
+                              </div>
+                              <div className="admin-item-actions">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const nextProjects = projects.map((currentProject) =>
+                                      currentProject.slug === project.slug
+                                        ? {
+                                            ...currentProject,
+                                            media: (currentProject.media || []).filter((_, currentIndex) => currentIndex !== mediaIndex),
+                                          }
+                                        : currentProject
+                                    );
+
+                                    void persist(
+                                      {
+                                        ...siteData,
+                                        projects: nextProjects,
+                                      },
+                                      `Removed media from ${project.title}`
+                                    );
+                                  }}
+                                >
+                                  Remove media
+                                </button>
                               </div>
                             </article>
                           ))}
-                        </section>
-                      ) : null}
-
-                      <div className="admin-project-media-list">
-                        {(project.media || []).map((mediaItem, mediaIndex) => (
-                          <article key={`${project.slug}-media-${mediaIndex + 1}`} className="admin-project-media-item">
-                            {mediaItem.mediaType === "video" ? (
-                              <video src={mediaItem.src} muted playsInline />
-                            ) : (
-                              <img src={mediaItem.src} alt={mediaItem.alt} />
-                            )}
-                            <div className="admin-project-media-copy">
-                              <strong>{mediaItem.alt || `Media ${mediaIndex + 1}`}</strong>
-                              <span>{mediaItem.mediaType === "video" ? "Video" : "Image"}</span>
-                            </div>
-                            <div className="admin-item-actions">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const nextProjects = projects.map((currentProject) =>
-                                    currentProject.slug === project.slug
-                                      ? {
-                                          ...currentProject,
-                                          media: (currentProject.media || []).filter((_, currentIndex) => currentIndex !== mediaIndex),
-                                        }
-                                      : currentProject
-                                  );
-
-                                  void persist(
-                                    {
-                                      ...siteData,
-                                      projects: nextProjects,
-                                    },
-                                    `Removed media from ${project.title}`
-                                  );
-                                }}
-                              >
-                                Remove media
-                              </button>
-                            </div>
-                          </article>
-                        ))}
+                        </div>
                       </div>
-                    </div>
-                    <div className="admin-copy-actions">
-                      <button className="admin-save" type="submit">Save project</button>
-                    </div>
-                  </form>
+                      <div className="admin-copy-actions">
+                        <button className="admin-save" type="submit">Save project</button>
+                      </div>
+                    </form>
+                  ) : null}
                 </section>
               ))}
             </section>
