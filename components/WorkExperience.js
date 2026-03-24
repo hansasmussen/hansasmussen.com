@@ -121,18 +121,18 @@ export function WorkExperience({ items, manifesto }) {
             <p>
               {focusedIndex + 1} / {items.length}
             </p>
-            {focusedHref && focusedCta ? (
-              <Link className="focused-gallery-link" href={focusedHref}>
-                {focusedCta}
-              </Link>
-            ) : null}
           </div>
+          {focusedHref ? (
+            <Link className="focused-gallery-project-link" href={focusedHref}>
+              See more from project
+            </Link>
+          ) : null}
           <FocusedAudioPlayer visible={isFocused} />
         </section>
       ) : (
         <section className="work-gallery work-gallery-embedded">
           <div className="work-gallery-inner">
-            <PortfolioGrid items={items} layout="precise" />
+            <PortfolioGrid items={items} layout="manual-columns" />
           </div>
         </section>
       )}

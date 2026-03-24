@@ -188,6 +188,7 @@ a {
   display: flex;
   justify-content: flex-end;
   margin-top: 28px;
+  padding-right: 22px;
 }
 
 .work-view-link {
@@ -428,6 +429,19 @@ h2 {
   gap: 22px;
 }
 
+.portfolio[data-layout="manual-columns"] .portfolio-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.portfolio-column {
+  display: grid;
+  gap: 22px;
+  align-content: start;
+}
+
 .project-media-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -445,14 +459,10 @@ h2 {
   display: block;
   position: relative;
   width: 100%;
-  margin: 0 0 22px;
+  margin: 0;
   overflow: hidden;
   break-inside: avoid;
   background: transparent;
-}
-
-.portfolio[data-layout="precise"] .portfolio-card {
-  margin: 0;
 }
 
 .portfolio-link {
@@ -536,7 +546,7 @@ h2 {
 .focused-gallery {
   display: grid;
   gap: 20px;
-  padding: 4px 22px 56px;
+  padding: 4px 22px 56px 0;
 }
 
 .focused-gallery-stage {
@@ -573,10 +583,10 @@ h2 {
 
 .focused-gallery-meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 16px;
-  padding: 0 66px;
+  padding: 0;
 }
 
 .focused-gallery-meta p {
@@ -591,9 +601,19 @@ h2 {
 .focused-audio-player {
   display: grid;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 10px;
   justify-items: center;
   min-height: 104px;
+}
+
+.focused-gallery-project-link {
+  justify-self: center;
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .focused-audio-title,
@@ -1994,6 +2014,7 @@ h2 {
     max-width: 100%;
   }
 
+  .portfolio[data-layout="manual-columns"] .portfolio-columns,
   .portfolio {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
@@ -2004,8 +2025,8 @@ h2 {
     gap: 18px;
   }
 
-  .portfolio-card {
-    margin-bottom: 0;
+  .portfolio-column {
+    gap: 18px;
   }
 
   .focused-gallery {
@@ -2078,6 +2099,7 @@ h2 {
 }
 
 @media (max-width: 640px) {
+  .portfolio[data-layout="manual-columns"] .portfolio-columns,
   .portfolio {
     grid-template-columns: 1fr;
   }
