@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PublicLayout } from "@/components/PublicLayout";
 import { ProjectMediaGrid } from "@/components/ProjectMediaGrid";
 import { getProjectBySlug, getSiteData } from "@/lib/site-data";
+import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -11,15 +12,19 @@ export async function generateMetadata({ params }) {
   const project = getProjectBySlug(siteData, slug);
 
   if (!project) {
-    return {
-      title: "Project Not Found | Hans Asmussen",
-    };
+    return buildMetadata({
+      title: "Project Not Found",
+      description: "This photography project does not exist yet.",
+      path: `/work/${slug}`,
+    });
   }
 
-  return {
-    title: `${project.title} | Hans Asmussen`,
-    description: project.summary || project.body || "Project page",
-  };
+  return buildMetadata({
+    title: project.title,
+    description: project.summary || project.body || "Photography project by Hans Asmussen.",
+    path: `/work/${slug}`,
+    image: project.media?.[0]?.src || undefined,
+  });
 }
 
 export default async function ProjectPage({ params }) {

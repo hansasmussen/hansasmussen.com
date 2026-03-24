@@ -1,8 +1,15 @@
 import { ContactForm } from "@/components/ContactForm";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getSiteData } from "@/lib/site-data";
+import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+export const metadata = buildMetadata({
+  title: "Contact",
+  description:
+    "Contact Hans Asmussen for fashion, lifestyle, portrait and editorial photography projects across Europe.",
+  path: "/contact",
+});
 
 export default async function ContactPage() {
   const siteData = await getSiteData();

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getJournalPostBySlug, getProjectBySlug, getSiteData } from "@/lib/site-data";
+import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -10,15 +11,18 @@ export async function generateMetadata({ params }) {
   const post = getJournalPostBySlug(siteData, slug);
 
   if (!post) {
-    return {
-      title: "Journal Not Found | Hans Asmussen",
-    };
+    return buildMetadata({
+      title: "Journal Not Found",
+      description: "This journal entry does not exist yet.",
+      path: `/journal/${slug}`,
+    });
   }
 
-  return {
-    title: `${post.title} | Hans Asmussen`,
+  return buildMetadata({
+    title: post.title,
     description: post.excerpt || post.body,
-  };
+    path: `/journal/${slug}`,
+  });
 }
 
 export default async function JournalPage({ params }) {
