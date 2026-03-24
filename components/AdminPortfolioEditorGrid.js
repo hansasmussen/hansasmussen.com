@@ -49,11 +49,11 @@ function buildBalancedColumns(items, columnCount, ratios = new Map()) {
 }
 
 function useResponsiveColumnCount() {
-  const [columnCount, setColumnCount] = useState(3);
+  const [columnCount, setColumnCount] = useState(4);
 
   useEffect(() => {
     const update = () => {
-      if (window.innerWidth <= 640) {
+      if (window.innerWidth <= 700) {
         setColumnCount(1);
         return;
       }
@@ -63,7 +63,12 @@ function useResponsiveColumnCount() {
         return;
       }
 
-      setColumnCount(3);
+      if (window.innerWidth <= 1550) {
+        setColumnCount(3);
+        return;
+      }
+
+      setColumnCount(4);
     };
 
     update();
@@ -72,6 +77,14 @@ function useResponsiveColumnCount() {
   }, []);
 
   return columnCount;
+}
+
+function AdminDragHint() {
+  return (
+    <span className="admin-portfolio-drag-hint" aria-hidden="true">
+      Drag
+    </span>
+  );
 }
 
 function AdminPortfolioMedia({ item }) {
@@ -132,9 +145,12 @@ export function AdminPortfolioEditorGrid({
                 }}
               >
                 <div className="admin-portfolio-card-panel">
-                  <div className="admin-portfolio-card-copy">
-                    <strong>{item.title}</strong>
-                    <span>{item.mediaType === "video" ? "Video" : "Image"}</span>
+                  <div className="admin-portfolio-card-head">
+                    <div className="admin-portfolio-card-copy">
+                      <strong>{item.title}</strong>
+                      <span>{item.mediaType === "video" ? "Video" : "Image"}</span>
+                    </div>
+                    <AdminDragHint />
                   </div>
 
                   <form

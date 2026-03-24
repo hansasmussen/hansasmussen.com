@@ -1087,14 +1087,14 @@ h2 {
 
 .admin-portfolio-columns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
   align-items: start;
 }
 
 .admin-portfolio-column {
   display: grid;
-  gap: 18px;
+  gap: 14px;
   align-content: start;
 }
 
@@ -1111,16 +1111,23 @@ h2 {
 
 .admin-portfolio-card-panel {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
+  top: 8px;
+  left: 8px;
+  right: 8px;
   z-index: 2;
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 8px;
+  padding: 9px 10px;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(226, 87, 28, 0.14);
   box-shadow: 0 8px 28px rgba(226, 87, 28, 0.08);
+}
+
+.admin-portfolio-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
 }
 
 .admin-portfolio-card-copy {
@@ -1137,12 +1144,22 @@ h2 {
 
 .admin-portfolio-card-copy span {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
+}
+
+.admin-portfolio-drag-hint {
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .admin-portfolio-card-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
@@ -1150,10 +1167,10 @@ h2 {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.92);
   color: var(--text);
-  padding: 8px 12px;
+  padding: 6px 9px;
   border-radius: 999px;
   cursor: pointer;
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1167,6 +1184,12 @@ h2 {
   display: block;
   width: 100%;
   height: auto;
+}
+
+@media (max-width: 1550px) {
+  .admin-portfolio-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .admin-item-panel {
