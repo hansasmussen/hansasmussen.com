@@ -287,6 +287,55 @@ export function AdminClient({ initialSiteData }) {
     void persist({ ...siteData, portfolioItems: items });
   };
 
+  const addProject = () => {
+    const nextIndex = projects.length + 1;
+    const slugBase = `new-project-${nextIndex}`;
+    const existingSlugs = new Set(projects.map((project) => project.slug));
+    let slug = slugBase;
+    let counter = 2;
+
+    while (existingSlugs.has(slug)) {
+      slug = `${slugBase}-${counter}`;
+      counter += 1;
+    }
+
+    const newProject = {
+      slug,
+      title: `New Project ${nextIndex}`,
+      summary: "",
+      technicalDetails: "",
+      body: "",
+      media: [],
+      journalSlug: null,
+    };
+
+    setExpandedProjectSlug(slug);
+    void persist(
+      {
+        ...siteData,
+        projects: [...projects, newProject],
+      },
+      `Added project: ${newProject.title}`
+    );
+  };
+
+  const removeProject = (projectSlug, projectTitle) => {
+    const nextProjects = projects.filter((project) => project.slug !== projectSlug);
+
+    setExpandedProjectSlug((current) => {
+      if (current !== projectSlug) return current;
+      return nextProjects[0]?.slug || null;
+    });
+
+    void persist(
+      {
+        ...siteData,
+        projects: nextProjects,
+      },
+      `Removed project: ${projectTitle}`
+    );
+  };
+
   return (
     <>
       <main className="admin-page">
@@ -482,6 +531,11 @@ export function AdminClient({ initialSiteData }) {
 
           {activeTab === "projects" ? (
             <section className="admin-content-stack">
+              <div className="admin-copy-actions">
+                <button className="admin-save" type="button" onClick={addProject}>
+                  Add project
+                </button>
+              </div>
               {projects.map((project, index) => (
                 <section
                   key={project.slug}
@@ -687,6 +741,13 @@ export function AdminClient({ initialSiteData }) {
                       </div>
                       <div className="admin-copy-actions">
                         <button className="admin-save" type="submit">Save project</button>
+                        <button
+                          className="admin-save"
+                          type="button"
+                          onClick={() => removeProject(project.slug, project.title)}
+                        >
+                          Delete project
+                        </button>
                       </div>
                     </form>
                   ) : null}
