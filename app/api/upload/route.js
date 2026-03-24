@@ -2,13 +2,25 @@ import { NextResponse } from "next/server";
 import { assertAdminRequest } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-function sanitizeFileName(fileName) {
-  return fileName
+function sanitizeSegment(value) {
+  return String(value || "")
     .toLowerCase()
-    .replace(/\.[^.]+$/, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 48);
+}
+
+function buildStoragePath({ file, context, projectSlug }) {
+  const extension = file.name.includes(".") ? file.name.split(".").pop()?.toLowerCase() : "jpg";
+  const dateStamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const shortId = crypto.randomUUID().slice(0, 8);
+  const safeProjectSlug = sanitizeSegment(projectSlug);
+
+  if (context === "project" && safeProjectSlug) {
+    return `projects/${safeProjectSlug}/${safeProjectSlug}-${dateStamp}-${shortId}.${extension}`;
+  }
+
+  return `portfolio/portfolio-item-${dateStamp}-${shortId}.${extension}`;
 }
 
 export async function POST(request) {
@@ -16,15 +28,15 @@ export async function POST(request) {
     await assertAdminRequest();
     const formData = await request.formData();
     const file = formData.get("file");
+    const context = String(formData.get("context") || "portfolio");
+    const projectSlug = String(formData.get("projectSlug") || "");
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No image file provided." }, { status: 400 });
     }
 
     const bucket = process.env.SUPABASE_STORAGE_BUCKET || "portfolio-images";
-    const extension = file.name.includes(".") ? file.name.split(".").pop()?.toLowerCase() : "jpg";
-    const baseName = sanitizeFileName(file.name) || "upload";
-    const filePath = `portfolio/${Date.now()}-${crypto.randomUUID()}-${baseName}.${extension}`;
+    const filePath = buildStoragePath({ file, context, projectSlug });
 
     const supabase = createSupabaseAdminClient();
     const fileBuffer = Buffer.from(await file.arrayBuffer());

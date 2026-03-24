@@ -34,9 +34,13 @@ function measureVideo(src) {
   });
 }
 
-async function uploadFile(file) {
+async function uploadFile(file, options = {}) {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("context", options.context || "portfolio");
+  if (options.projectSlug) {
+    formData.append("projectSlug", options.projectSlug);
+  }
 
   const response = await fetch("/api/upload", {
     method: "POST",
@@ -175,7 +179,7 @@ export function AdminClient({ initialSiteData }) {
       for (let index = 0; index < files.length; index += 1) {
         nextQueueItems[index].status = "Uploading";
         setQueueItems([...nextQueueItems]);
-        const uploadedAsset = await uploadFile(files[index]);
+        const uploadedAsset = await uploadFile(files[index], { context: "portfolio" });
         const uploadedItem = await fileToPortfolioItem(files[index], uploadedAsset);
         uploads.push(uploadedItem);
         nextQueueItems[index].status = "Added";
@@ -219,7 +223,10 @@ export function AdminClient({ initialSiteData }) {
       for (let index = 0; index < files.length; index += 1) {
         nextQueueItems[index].status = "Uploading";
         setProjectQueueItems([...nextQueueItems]);
-        const uploadedAsset = await uploadFile(files[index]);
+        const uploadedAsset = await uploadFile(files[index], {
+          context: "project",
+          projectSlug,
+        });
         const uploadedItem = await fileToPortfolioItem(files[index], uploadedAsset);
         uploads.push({
           src: uploadedItem.src,
