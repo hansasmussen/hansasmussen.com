@@ -1155,6 +1155,30 @@ h2 {
   justify-content: space-between;
   gap: 10px;
   align-items: flex-start;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-portfolio-card-panel.is-open {
+  gap: 10px;
+}
+
+.admin-portfolio-card-head-side {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-portfolio-card-toggle {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 400;
 }
 
 .admin-portfolio-card-copy {

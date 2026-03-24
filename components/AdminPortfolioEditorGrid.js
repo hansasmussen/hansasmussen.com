@@ -101,6 +101,7 @@ export function AdminPortfolioEditorGrid({
   const columnCount = useResponsiveColumnCount();
   const [ratios, setRatios] = useState(() => new Map());
   const [dropTargetId, setDropTargetId] = useState(null);
+  const [expandedCardId, setExpandedCardId] = useState(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -157,48 +158,64 @@ export function AdminPortfolioEditorGrid({
                 {dropTargetId === item.id && draggedId !== item.id ? (
                   <div className="admin-drop-indicator">Drop here</div>
                 ) : null}
-                <div className="admin-portfolio-card-panel">
-                  <div className="admin-portfolio-card-head">
+                <div className={`admin-portfolio-card-panel ${expandedCardId === item.id ? "is-open" : ""}`}>
+                  <button
+                    className="admin-portfolio-card-head"
+                    type="button"
+                    onClick={() =>
+                      setExpandedCardId((current) => (current === item.id ? null : item.id))
+                    }
+                  >
                     <div className="admin-portfolio-card-copy">
                       <strong>{item.title}</strong>
-                      <span>{item.mediaType === "video" ? "Video" : "Image"}</span>
+                      <span>
+                        {item.mediaType === "video" ? "Video" : "Image"}
+                        {item.featured ? " / Carousel" : ""}
+                      </span>
                     </div>
-                    <AdminDragHint />
-                  </div>
+                    <div className="admin-portfolio-card-head-side">
+                      <AdminDragHint />
+                      <span className="admin-portfolio-card-toggle" aria-hidden="true">
+                        {expandedCardId === item.id ? "−" : "+"}
+                      </span>
+                    </div>
+                  </button>
 
-                  <form
-                    className="admin-link-form"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      const formData = new FormData(event.currentTarget);
-                      updateItem(item.id, (current) => ({
-                        ...current,
-                        projectSlug: String(formData.get("projectSlug") || "") || null,
-                        journalSlug: String(formData.get("journalSlug") || "") || null,
-                      }));
-                    }}
-                  >
-                    <label>
-                      Project slug
-                      <input name="projectSlug" defaultValue={item.projectSlug || ""} />
-                    </label>
-                    <label>
-                      Journal slug
-                      <input name="journalSlug" defaultValue={item.journalSlug || ""} />
-                    </label>
-                    <div className="admin-portfolio-card-actions">
-                      <button
-                        type="button"
-                        onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
-                      >
-                        {item.featured ? "In carousel" : "Carousel"}
-                      </button>
-                      <button type="submit">Save</button>
-                      <button type="button" onClick={() => removeItem(item.id)}>
-                        Remove
-                      </button>
-                    </div>
-                  </form>
+                  {expandedCardId === item.id ? (
+                    <form
+                      className="admin-link-form"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const formData = new FormData(event.currentTarget);
+                        updateItem(item.id, (current) => ({
+                          ...current,
+                          projectSlug: String(formData.get("projectSlug") || "") || null,
+                          journalSlug: String(formData.get("journalSlug") || "") || null,
+                        }));
+                      }}
+                    >
+                      <label>
+                        Project slug
+                        <input name="projectSlug" defaultValue={item.projectSlug || ""} />
+                      </label>
+                      <label>
+                        Journal slug
+                        <input name="journalSlug" defaultValue={item.journalSlug || ""} />
+                      </label>
+                      <div className="admin-portfolio-card-actions">
+                        <button
+                          type="button"
+                          onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
+                        >
+                          {item.featured ? "In carousel" : "Carousel"}
+                        </button>
+                        <button type="submit">Save</button>
+                        <button type="button" onClick={() => removeItem(item.id)}>
+                          Remove
+                        </button>
+                      </div>
+                    </form>
+                  ) : null}
                 </div>
 
                 <div className="admin-portfolio-card-media">
