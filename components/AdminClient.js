@@ -326,7 +326,7 @@ export function AdminClient({ initialSiteData }) {
       await persist(
         {
           ...siteData,
-          portfolioItems: [...siteData.portfolioItems, ...uploads],
+          portfolioItems: [...uploads, ...siteData.portfolioItems],
         },
         `Added ${uploads.length} item${uploads.length > 1 ? "s" : ""} to the layout.`
       );
