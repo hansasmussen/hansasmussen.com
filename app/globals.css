@@ -547,6 +547,16 @@ h2 {
   display: grid;
   gap: 20px;
   padding: 4px 22px 56px 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.focused-gallery-overlay {
+  position: absolute;
+  inset: -24px -22px -32px -32px;
+  background: color-mix(in srgb, var(--page-bg) 88%, transparent);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .focused-gallery-stage {
@@ -554,6 +564,8 @@ h2 {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 18px;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .focused-gallery-arrow {
@@ -587,6 +599,8 @@ h2 {
   align-items: center;
   gap: 16px;
   padding: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .focused-gallery-meta p {
@@ -604,6 +618,8 @@ h2 {
   margin-top: 10px;
   justify-items: center;
   min-height: 104px;
+  position: relative;
+  z-index: 1;
 }
 
 .focused-gallery-project-link {
@@ -614,6 +630,8 @@ h2 {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  position: relative;
+  z-index: 1;
 }
 
 .focused-audio-title,
