@@ -97,6 +97,8 @@ export function AdminPortfolioEditorGrid({
   reorderItems,
   updateItem,
   removeItem,
+  generateAltText,
+  altingItemId,
 }) {
   const columnCount = useResponsiveColumnCount();
   const [ratios, setRatios] = useState(() => new Map());
@@ -190,6 +192,7 @@ export function AdminPortfolioEditorGrid({
                         updateItem(item.id, (current) => ({
                           ...current,
                           projectSlug: String(formData.get("projectSlug") || "") || null,
+                          alt: String(formData.get("alt") || "").trim(),
                           journalSlug: String(formData.get("journalSlug") || "") || null,
                         }));
                       }}
@@ -199,10 +202,23 @@ export function AdminPortfolioEditorGrid({
                         <input name="projectSlug" defaultValue={item.projectSlug || ""} />
                       </label>
                       <label>
+                        Alt text
+                        <input name="alt" defaultValue={item.alt || ""} />
+                      </label>
+                      <label>
                         Journal slug
                         <input name="journalSlug" defaultValue={item.journalSlug || ""} />
                       </label>
                       <div className="admin-portfolio-card-actions">
+                        {item.mediaType !== "video" ? (
+                          <button
+                            type="button"
+                            onClick={() => generateAltText(item.id)}
+                            disabled={altingItemId === item.id}
+                          >
+                            {altingItemId === item.id ? "Alting..." : "Auto alt"}
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}

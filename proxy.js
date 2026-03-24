@@ -7,7 +7,8 @@ function isProtectedPath(pathname) {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/site-data") ||
     pathname.startsWith("/api/upload") ||
-    pathname.startsWith("/api/project-text-rewrite")
+    pathname.startsWith("/api/project-text-rewrite") ||
+    pathname.startsWith("/api/image-alt-text")
   );
 }
 
@@ -72,5 +73,6 @@ export const config = {
     "/api/site-data/:path*",
     "/api/upload/:path*",
     "/api/project-text-rewrite/:path*",
+    "/api/image-alt-text/:path*",
   ],
 };

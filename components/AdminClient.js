@@ -72,6 +72,44 @@ async function rewriteProjectText(payload) {
   return response.json();
 }
 
+async function requestAltText(payload) {
+  const response = await fetch("/api/image-alt-text", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorPayload = await response.json().catch(() => null);
+    throw new Error(errorPayload?.error || "Alt generation failed.");
+  }
+
+  return response.json();
+}
+
+async function enrichItemWithAutoAlt(item) {
+  if (item.mediaType === "video") {
+    return item;
+  }
+
+  try {
+    const generated = await requestAltText({
+      src: item.src,
+      title: item.title,
+      projectSlug: item.projectSlug,
+    });
+
+    return {
+      ...item,
+      alt: String(generated.alt || item.alt || "").trim() || item.alt,
+    };
+  } catch {
+    return item;
+  }
+}
+
 async function fileToPortfolioItem(file, uploadedAsset) {
   const title = file.name.replace(/\.[^.]+$/, "");
   const localPreviewUrl = URL.createObjectURL(file);
@@ -104,6 +142,7 @@ export function AdminClient({ initialSiteData }) {
   const [draggedId, setDraggedId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [rewritingProjectSlug, setRewritingProjectSlug] = useState(null);
+  const [altingItemId, setAltingItemId] = useState(null);
 
   const content = siteData.content || {};
 
@@ -181,7 +220,9 @@ export function AdminClient({ initialSiteData }) {
         setQueueItems([...nextQueueItems]);
         const uploadedAsset = await uploadFile(files[index], { context: "portfolio" });
         const uploadedItem = await fileToPortfolioItem(files[index], uploadedAsset);
+        const uploadedItemWithAlt = await enrichItemWithAutoAlt(uploadedItem);
         uploads.push(uploadedItem);
+        uploads[uploads.length - 1] = uploadedItemWithAlt;
         nextQueueItems[index].status = "Added";
         setQueueItems([...nextQueueItems]);
       }
@@ -228,11 +269,15 @@ export function AdminClient({ initialSiteData }) {
           projectSlug,
         });
         const uploadedItem = await fileToPortfolioItem(files[index], uploadedAsset);
+        const uploadedItemWithAlt = await enrichItemWithAutoAlt({
+          ...uploadedItem,
+          projectSlug,
+        });
         uploads.push({
-          src: uploadedItem.src,
-          alt: uploadedItem.alt,
-          mediaType: uploadedItem.mediaType,
-          span: uploadedItem.span,
+          src: uploadedItemWithAlt.src,
+          alt: uploadedItemWithAlt.alt,
+          mediaType: uploadedItemWithAlt.mediaType,
+          span: uploadedItemWithAlt.span,
         });
         nextQueueItems[index].status = "Added";
         setProjectQueueItems([...nextQueueItems]);
@@ -292,6 +337,36 @@ export function AdminClient({ initialSiteData }) {
     const [movedItem] = items.splice(fromIndex, 1);
     items.splice(toIndex, 0, movedItem);
     void persist({ ...siteData, portfolioItems: items });
+  };
+
+  const generateAltText = async (itemId) => {
+    const item = siteData.portfolioItems.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    setAltingItemId(itemId);
+    setStatus(`Generating alt text for ${item.title}...`);
+
+    try {
+      const generated = await requestAltText({
+        src: item.src,
+        title: item.title,
+        projectSlug: item.projectSlug,
+      });
+
+      await persist(
+        {
+          ...siteData,
+          portfolioItems: siteData.portfolioItems.map((entry) =>
+            entry.id === itemId ? { ...entry, alt: String(generated.alt || "") } : entry
+          ),
+        },
+        `Alt text updated for ${item.title}.`
+      );
+    } catch (error) {
+      setStatus(error instanceof Error ? `Alt generation failed: ${error.message}` : "Alt generation failed.");
+    } finally {
+      setAltingItemId(null);
+    }
   };
 
   const addProject = () => {
@@ -493,6 +568,8 @@ export function AdminClient({ initialSiteData }) {
                 reorderItems={reorderItems}
                 updateItem={updateItem}
                 removeItem={removeItem}
+                generateAltText={generateAltText}
+                altingItemId={altingItemId}
               />
             </section>
           ) : null}
