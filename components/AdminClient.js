@@ -55,6 +55,74 @@ async function uploadFile(file, options = {}) {
   return response.json();
 }
 
+function blobExtension(type) {
+  if (type === "image/png") return "png";
+  if (type === "image/webp") return "webp";
+  return "jpg";
+}
+
+async function optimizeImageForUpload(file) {
+  if (!file.type.startsWith("image/")) {
+    return file;
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const nextImage = new Image();
+      nextImage.onload = () => resolve(nextImage);
+      nextImage.onerror = reject;
+      nextImage.src = objectUrl;
+    });
+
+    const longestSide = Math.max(image.naturalWidth, image.naturalHeight);
+    const maxDimension = 2800;
+    const scale = longestSide > maxDimension ? maxDimension / longestSide : 1;
+    const targetWidth = Math.max(1, Math.round(image.naturalWidth * scale));
+    const targetHeight = Math.max(1, Math.round(image.naturalHeight * scale));
+
+    if (scale === 1 && file.size <= 3.5 * 1024 * 1024) {
+      return file;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return file;
+    }
+
+    context.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+    const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(
+        (nextBlob) => resolve(nextBlob),
+        outputType,
+        outputType === "image/png" ? undefined : 0.88
+      );
+    });
+
+    if (!(blob instanceof Blob)) {
+      return file;
+    }
+
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "upload";
+    return new File([blob], `${baseName}.${blobExtension(outputType)}`, {
+      type: outputType,
+      lastModified: Date.now(),
+    });
+  } catch {
+    return file;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
 async function rewriteProjectText(payload) {
   const response = await fetch("/api/project-text-rewrite", {
     method: "POST",
@@ -216,10 +284,13 @@ export function AdminClient({ initialSiteData }) {
       const uploads = [];
 
       for (let index = 0; index < files.length; index += 1) {
+        nextQueueItems[index].status = "Preparing";
+        setQueueItems([...nextQueueItems]);
+        const optimizedFile = await optimizeImageForUpload(files[index]);
         nextQueueItems[index].status = "Uploading";
         setQueueItems([...nextQueueItems]);
-        const uploadedAsset = await uploadFile(files[index], { context: "portfolio" });
-        const uploadedItem = await fileToPortfolioItem(files[index], uploadedAsset);
+        const uploadedAsset = await uploadFile(optimizedFile, { context: "portfolio" });
+        const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset);
         const uploadedItemWithAlt = await enrichItemWithAutoAlt(uploadedItem);
         uploads.push(uploadedItem);
         uploads[uploads.length - 1] = uploadedItemWithAlt;
@@ -262,13 +333,16 @@ export function AdminClient({ initialSiteData }) {
       const uploads = [];
 
       for (let index = 0; index < files.length; index += 1) {
+        nextQueueItems[index].status = "Preparing";
+        setProjectQueueItems([...nextQueueItems]);
+        const optimizedFile = await optimizeImageForUpload(files[index]);
         nextQueueItems[index].status = "Uploading";
         setProjectQueueItems([...nextQueueItems]);
-        const uploadedAsset = await uploadFile(files[index], {
+        const uploadedAsset = await uploadFile(optimizedFile, {
           context: "project",
           projectSlug,
         });
-        const uploadedItem = await fileToPortfolioItem(files[index], uploadedAsset);
+        const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset);
         const uploadedItemWithAlt = await enrichItemWithAutoAlt({
           ...uploadedItem,
           projectSlug,
