@@ -94,6 +94,7 @@ export function WorkExperience({ items, manifesto }) {
 
   return (
     <>
+      {isFocused ? <div className="focused-page-overlay" aria-hidden="true" /> : null}
       <section className="intro work-intro">
         <p className="work-manifesto">{manifesto}</p>
         <div className="work-view-actions">
@@ -105,7 +106,6 @@ export function WorkExperience({ items, manifesto }) {
 
       {isFocused && focusedItem ? (
         <section className="focused-gallery" aria-label="Focused portfolio view">
-          <div className="focused-gallery-overlay" aria-hidden="true" />
           <div className="focused-gallery-stage">
             <button className="focused-gallery-arrow is-prev" type="button" onClick={() => step(-1)}>
               ←
