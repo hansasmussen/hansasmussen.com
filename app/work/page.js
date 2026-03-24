@@ -1,5 +1,5 @@
-import { PortfolioGrid } from "@/components/PortfolioGrid";
 import { PublicLayout } from "@/components/PublicLayout";
+import { WorkExperience } from "@/components/WorkExperience";
 import { getSiteData } from "@/lib/site-data";
 
 export const dynamic = "force-dynamic";
@@ -9,14 +9,7 @@ export default async function WorkPage() {
 
   return (
     <PublicLayout mainClassName="work-main">
-      <section className="intro work-intro">
-        <p className="work-manifesto">{siteData.content.workManifesto}</p>
-      </section>
-      <section className="work-gallery work-gallery-embedded">
-        <div className="work-gallery-inner">
-          <PortfolioGrid items={siteData.portfolioItems} />
-        </div>
-      </section>
+      <WorkExperience items={siteData.portfolioItems} manifesto={siteData.content.workManifesto} />
     </PublicLayout>
   );
 }

@@ -5,8 +5,9 @@ import { getJournalPostBySlug, getProjectBySlug, getSiteData } from "@/lib/site-
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
+  const { slug } = await params;
   const siteData = await getSiteData();
-  const post = getJournalPostBySlug(siteData, params.slug);
+  const post = getJournalPostBySlug(siteData, slug);
 
   if (!post) {
     return {
@@ -21,8 +22,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function JournalPage({ params }) {
+  const { slug } = await params;
   const siteData = await getSiteData();
-  const post = getJournalPostBySlug(siteData, params.slug);
+  const post = getJournalPostBySlug(siteData, slug);
   const relatedProject = post ? getProjectBySlug(siteData, post.relatedProjectSlug) : null;
 
   if (!post) {

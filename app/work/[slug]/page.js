@@ -6,8 +6,9 @@ import { getProjectBySlug, getSiteData } from "@/lib/site-data";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
+  const { slug } = await params;
   const siteData = await getSiteData();
-  const project = getProjectBySlug(siteData, params.slug);
+  const project = getProjectBySlug(siteData, slug);
 
   if (!project) {
     return {
@@ -22,8 +23,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProjectPage({ params }) {
+  const { slug } = await params;
   const siteData = await getSiteData();
-  const project = getProjectBySlug(siteData, params.slug);
+  const project = getProjectBySlug(siteData, slug);
 
   if (!project) {
     return (

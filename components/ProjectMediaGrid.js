@@ -3,5 +3,5 @@
 import { PortfolioGrid } from "@/components/PortfolioGrid";
 
 export function ProjectMediaGrid({ items }) {
-  return <PortfolioGrid items={items} className="project-media-grid" layout="stacked" />;
+  return <PortfolioGrid items={items} className="project-media-grid" layout="project-grid" />;
 }

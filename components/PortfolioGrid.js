@@ -36,7 +36,7 @@ function PortfolioMedia({ item }) {
   return <img src={item.src} alt={item.alt} loading="lazy" />;
 }
 
-export function PortfolioGrid({ items, className = "", preview = false, layout = "stacked" }) {
+export function PortfolioGrid({ items, className = "", preview = false, layout = "precise" }) {
   const gridClassName = useMemo(() => `portfolio ${className}`.trim(), [className]);
 
   return (
