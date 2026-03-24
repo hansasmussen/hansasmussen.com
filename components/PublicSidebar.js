@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { FocusedAudioPlayer } from "@/components/FocusedAudioPlayer";
+import { usePathname } from "next/navigation";
 import { SocialNav } from "@/components/SocialNav";
 
 const links = [
@@ -13,8 +12,6 @@ const links = [
 
 export function PublicSidebar() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const isFocusedWork = pathname === "/work" && searchParams.get("view") === "focused";
 
   return (
     <aside className="public-sidebar">
@@ -38,8 +35,6 @@ export function PublicSidebar() {
         </nav>
 
         <SocialNav />
-
-        <FocusedAudioPlayer visible={isFocusedWork} />
 
         <div className="public-sidebar-meta">
           <p>

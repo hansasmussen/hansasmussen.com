@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
+import { FocusedAudioPlayer } from "@/components/FocusedAudioPlayer";
 import { PortfolioGrid } from "@/components/PortfolioGrid";
 
 function FocusedMedia({ item }) {
@@ -96,7 +97,7 @@ export function WorkExperience({ items, manifesto }) {
       <section className="intro work-intro">
         <p className="work-manifesto">{manifesto}</p>
         <div className="work-view-actions">
-          <button type="button" onClick={() => setFocusedMode(!isFocused, focusedIndex)}>
+          <button className="work-view-link" type="button" onClick={() => setFocusedMode(!isFocused, focusedIndex)}>
             {isFocused ? "Back to grid" : "Focused view"}
           </button>
         </div>
@@ -126,6 +127,7 @@ export function WorkExperience({ items, manifesto }) {
               </Link>
             ) : null}
           </div>
+          <FocusedAudioPlayer visible={isFocused} />
         </section>
       ) : (
         <section className="work-gallery work-gallery-embedded">

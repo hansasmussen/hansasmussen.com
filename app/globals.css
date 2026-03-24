@@ -186,11 +186,23 @@ a {
 
 .work-view-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   margin-top: 28px;
 }
 
-.work-view-actions button,
+.work-view-link {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .focused-gallery-link,
 .focused-audio-actions button {
   border: 1px solid var(--text);
@@ -578,8 +590,10 @@ h2 {
 
 .focused-audio-player {
   display: grid;
-  gap: 10px;
-  margin-top: 24px;
+  gap: 12px;
+  margin-top: 18px;
+  justify-items: center;
+  min-height: 104px;
 }
 
 .focused-audio-title,
@@ -594,18 +608,53 @@ h2 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .focused-audio-actions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .focused-audio-credit {
   color: var(--muted);
   font-size: 0.62rem;
   line-height: 1.55;
+  text-align: center;
+}
+
+.focused-audio-note,
+.focused-audio-controls {
+  transition: opacity 420ms ease;
+}
+
+.focused-audio-note {
+  margin: 0;
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.focused-audio-controls {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.focused-audio-note.is-hidden,
+.focused-audio-controls.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.focused-audio-note.is-visible,
+.focused-audio-controls.is-visible {
+  opacity: 1;
 }
 
 .admin-page {
