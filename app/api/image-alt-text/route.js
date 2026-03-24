@@ -18,16 +18,26 @@ You are writing SEO-friendly alt text for a photography portfolio.
 Rules:
 - Return JSON only: { "alt": "..." }
 - Write one concise alt text, ideally 8-16 words.
-- Be specific and factual about the visible subject, mood, styling, setting, and composition when clear.
+- Describe only what is visibly present in the image: subject, clothing, pose, mood, setting, light, framing, and composition when clear.
 - Do not keyword-stuff.
 - Do not start with "image of", "photo of", or "picture of".
-- Do not invent brands, people, or locations unless clearly visible or strongly implied by the provided context.
+- Do not mention client names, brands, project names, collection names, product lines, file names, or slugs unless that exact text is visibly present in the image itself.
+- Do not use the provided portfolio title or slug as wording for the alt text.
+- Prefer a plain visual description over editorial phrasing.
 - Keep it natural, elegant, and useful for accessibility first, SEO second.
 
 Context:
-- Portfolio title: ${title || ""}
-- Project slug hint: ${projectSlug || ""}
+- Portfolio title for internal reference only: ${title || ""}
+- Project slug hint for internal reference only: ${projectSlug || ""}
   `.trim();
+}
+
+function cleanAltText(alt) {
+  return String(alt || "")
+    .replace(/\b(?:from|for)\s+[A-Z0-9][^,.;:()]{0,60}$/i, "")
+    .replace(/\b(?:series|campaign|lookbook|collection)\b[^,.;:()]{0,60}$/i, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 async function loadImageAsBase64(src) {
@@ -128,7 +138,7 @@ export async function POST(request) {
     }
 
     const responsePayload = await response.json();
-    const alt = extractAltText(responsePayload);
+    const alt = cleanAltText(extractAltText(responsePayload));
 
     if (!alt) {
       throw new Error("No alt text returned.");

@@ -133,7 +133,7 @@ export function AdminPortfolioEditorGrid({
             {columnItems.map((item) => (
               <article
                 key={item.id}
-                className={`admin-portfolio-card ${draggedId === item.id ? "is-dragging" : ""} ${dropTargetId === item.id && draggedId !== item.id ? "is-drop-target" : ""}`}
+                className={`admin-portfolio-card ${draggedId === item.id ? "is-dragging" : ""} ${dropTargetId === item.id && draggedId !== item.id ? "is-drop-target" : ""} ${expandedCardId === item.id ? "is-panel-open" : ""}`}
                 draggable
                 onDragStart={() => setDraggedId(item.id)}
                 onDragEnd={() => {

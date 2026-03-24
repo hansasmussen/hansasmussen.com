@@ -214,7 +214,7 @@ async function fileToPortfolioItem(file, uploadedAsset, options = {}) {
     year: String(new Date().getFullYear()),
     src: uploadedAsset.src,
     storagePath: uploadedAsset.path || null,
-    alt: title,
+    alt: "",
     mediaType: file.type.startsWith("video/") ? "video" : "image",
     span: dimensions.width > dimensions.height ? "wide" : "single",
     focus: "center",

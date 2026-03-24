@@ -1108,6 +1108,11 @@ h2 {
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
+.admin-portfolio-card.is-panel-open {
+  overflow: visible;
+  z-index: 5;
+}
+
 .admin-portfolio-card.is-dragging {
   opacity: 0.5;
 }
@@ -1166,6 +1171,7 @@ h2 {
 
 .admin-portfolio-card-panel.is-open {
   gap: 10px;
+  padding-bottom: 12px;
 }
 
 .admin-portfolio-card-head-side {
