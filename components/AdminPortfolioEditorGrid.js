@@ -49,7 +49,7 @@ function buildBalancedColumns(items, columnCount, ratios = new Map()) {
 }
 
 function useResponsiveColumnCount() {
-  const [columnCount, setColumnCount] = useState(4);
+  const [columnCount, setColumnCount] = useState(3);
 
   useEffect(() => {
     const update = () => {
@@ -63,12 +63,7 @@ function useResponsiveColumnCount() {
         return;
       }
 
-      if (window.innerWidth <= 1550) {
-        setColumnCount(3);
-        return;
-      }
-
-      setColumnCount(4);
+      setColumnCount(3);
     };
 
     update();
@@ -105,6 +100,7 @@ export function AdminPortfolioEditorGrid({
 }) {
   const columnCount = useResponsiveColumnCount();
   const [ratios, setRatios] = useState(() => new Map());
+  const [dropTargetId, setDropTargetId] = useState(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -134,16 +130,33 @@ export function AdminPortfolioEditorGrid({
             {columnItems.map((item) => (
               <article
                 key={item.id}
-                className={`admin-portfolio-card ${draggedId === item.id ? "is-dragging" : ""}`}
+                className={`admin-portfolio-card ${draggedId === item.id ? "is-dragging" : ""} ${dropTargetId === item.id && draggedId !== item.id ? "is-drop-target" : ""}`}
                 draggable
                 onDragStart={() => setDraggedId(item.id)}
-                onDragEnd={() => setDraggedId(null)}
-                onDragOver={(event) => event.preventDefault()}
+                onDragEnd={() => {
+                  setDraggedId(null);
+                  setDropTargetId(null);
+                }}
+                onDragEnter={(event) => {
+                  event.preventDefault();
+                  if (draggedId && draggedId !== item.id) setDropTargetId(item.id);
+                }}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  if (draggedId && draggedId !== item.id) setDropTargetId(item.id);
+                }}
+                onDragLeave={() => {
+                  if (dropTargetId === item.id) setDropTargetId(null);
+                }}
                 onDrop={() => {
                   if (draggedId) reorderItems(draggedId, item.id);
                   setDraggedId(null);
+                  setDropTargetId(null);
                 }}
               >
+                {dropTargetId === item.id && draggedId !== item.id ? (
+                  <div className="admin-drop-indicator">Drop here</div>
+                ) : null}
                 <div className="admin-portfolio-card-panel">
                   <div className="admin-portfolio-card-head">
                     <div className="admin-portfolio-card-copy">

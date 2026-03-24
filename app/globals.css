@@ -1083,11 +1083,13 @@ h2 {
 
 .admin-portfolio-grid {
   padding-top: 8px;
+  width: min(100%, 1180px);
+  margin: 0 auto;
 }
 
 .admin-portfolio-columns {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   align-items: start;
 }
@@ -1103,10 +1105,35 @@ h2 {
   overflow: hidden;
   background: rgba(255, 255, 255, 0.42);
   border: 1px solid var(--line);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
 .admin-portfolio-card.is-dragging {
   opacity: 0.5;
+}
+
+.admin-portfolio-card.is-drop-target {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px rgba(226, 87, 28, 0.2);
+  transform: translateY(-2px);
+}
+
+.admin-drop-indicator {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  padding: 8px 12px;
+  border: 1px solid var(--text);
+  background: rgba(244, 241, 230, 0.96);
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
 }
 
 .admin-portfolio-card-panel {
@@ -1184,12 +1211,6 @@ h2 {
   display: block;
   width: 100%;
   height: auto;
-}
-
-@media (max-width: 1550px) {
-  .admin-portfolio-columns {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .admin-item-panel {
