@@ -356,6 +356,7 @@ export function AdminClient({ initialSiteData }) {
 
     try {
       const uploads = [];
+      const currentProject = projects.find((project) => project.slug === projectSlug);
 
       for (let index = 0; index < files.length; index += 1) {
         nextQueueItems[index].status = "Preparing";
@@ -368,7 +369,7 @@ export function AdminClient({ initialSiteData }) {
           projectSlug,
         });
         const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset, {
-          existingItems: project.media || [],
+          existingItems: currentProject?.media || [],
           context: "project",
         });
         const uploadedItemWithAlt = await enrichItemWithAutoAlt({
