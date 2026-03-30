@@ -517,9 +517,12 @@ h2 {
 .project-lightbox {
   display: grid;
   gap: 18px;
-  padding: 10px 22px 56px 0;
-  position: relative;
+  position: fixed;
+  inset: 0;
+  align-content: center;
+  padding: 32px 40px 28px clamp(340px, 24vw, 420px);
   z-index: 4;
+  pointer-events: none;
 }
 
 .project-lightbox-stage {
@@ -527,6 +530,7 @@ h2 {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 18px;
   align-items: center;
+  pointer-events: auto;
 }
 
 .project-lightbox-media {
@@ -543,6 +547,7 @@ h2 {
   justify-content: center;
   align-items: center;
   gap: 18px;
+  pointer-events: auto;
 }
 
 .project-lightbox-meta p {
@@ -2391,7 +2396,8 @@ h2 {
   }
 
   .project-lightbox {
-    padding-inline: 0;
+    inset: 0;
+    padding: 22px 18px 18px;
   }
 
   .project-lightbox-stage {
