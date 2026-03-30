@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PublicLayout } from "@/components/PublicLayout";
-import { getJournalPostBySlug, getProjectBySlug, getSiteData } from "@/lib/site-data";
+import { getJournalPostBySlug, getPrintProducts, getProjectBySlug, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -30,17 +30,18 @@ export default async function JournalPage({ params }) {
   const siteData = await getSiteData();
   const post = getJournalPostBySlug(siteData, slug);
   const relatedProject = post ? getProjectBySlug(siteData, post.relatedProjectSlug) : null;
+  const showPrints = getPrintProducts(siteData).length > 0;
 
   if (!post) {
     return (
-      <PublicLayout mainClassName="journal-page">
+      <PublicLayout mainClassName="journal-page" showPrints={showPrints}>
           <h1>Journal post not found</h1>
       </PublicLayout>
     );
   }
 
   return (
-    <PublicLayout mainClassName="journal-page">
+    <PublicLayout mainClassName="journal-page" showPrints={showPrints}>
         <p className="eyebrow">Journal</p>
         <h1>{post.title}</h1>
         <p className="journal-excerpt">{post.excerpt}</p>

@@ -736,8 +736,8 @@ export function AdminClient({ initialSiteData }) {
                     }
                   >
                     <div className="admin-section-heading">
-                      <p className="eyebrow">Project {index + 1}</p>
-                      <h2>{project.title}</h2>
+                      <p className="eyebrow">Project</p>
+                      <h2>{project.slug}</h2>
                     </div>
                     <span className="admin-accordion-icon" aria-hidden="true">
                       {expandedProjectSlug === project.slug ? "−" : "+"}

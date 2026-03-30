@@ -1160,6 +1160,25 @@ h2 {
   background: #ffffff;
 }
 
+.admin-inline-toggle {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-inline-toggle input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  min-height: 16px;
+}
+
+.admin-print-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
 .admin-link-form button {
   width: fit-content;
   border: 1px solid var(--line);
@@ -1438,6 +1457,98 @@ h2 {
   letter-spacing: 0.06em;
   color: var(--muted);
   white-space: pre-line;
+}
+
+.prints-page {
+  display: grid;
+  gap: 34px;
+}
+
+.prints-intro {
+  display: grid;
+  gap: 14px;
+  max-width: 840px;
+}
+
+.prints-intro h1 {
+  margin: 0;
+}
+
+.prints-lede {
+  margin: 0;
+  max-width: 760px;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.96rem;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+}
+
+.prints-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.print-card {
+  display: grid;
+  gap: 16px;
+}
+
+.print-card-media img {
+  width: 100%;
+  height: auto;
+}
+
+.print-card-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.print-card-copy h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.print-card-paper,
+.print-card-placeholder,
+.print-card-note {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  line-height: 1.75;
+}
+
+.print-card-paper {
+  font-size: 0.84rem;
+}
+
+.print-card-note,
+.print-card-placeholder {
+  font-size: 0.76rem;
+}
+
+.print-card-options {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.print-card-options li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .contact-links {
@@ -2451,7 +2562,8 @@ h2 {
   .campaign-hero,
   .campaign-detail-layout,
   .campaign-grid,
-  .campaign-list {
+  .campaign-list,
+  .prints-grid {
     grid-template-columns: 1fr;
   }
 

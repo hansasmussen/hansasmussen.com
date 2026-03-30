@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SocialNav } from "@/components/SocialNav";
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/work", label: "Work" },
-  { href: "/contact", label: "Contact" },
-];
-
-export function PublicSidebar() {
+export function PublicSidebar({ showPrints = false }) {
   const pathname = usePathname();
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/work", label: "Work" },
+    ...(showPrints ? [{ href: "/prints", label: "Prints" }] : []),
+    { href: "/contact", label: "Contact" },
+  ];
 
   return (
     <aside className="public-sidebar">

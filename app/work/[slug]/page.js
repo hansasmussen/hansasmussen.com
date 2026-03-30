@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PublicLayout } from "@/components/PublicLayout";
 import { ProjectMediaGrid } from "@/components/ProjectMediaGrid";
-import { getProjectBySlug, getSiteData } from "@/lib/site-data";
+import { getPrintProducts, getProjectBySlug, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -31,10 +31,11 @@ export default async function ProjectPage({ params }) {
   const { slug } = await params;
   const siteData = await getSiteData();
   const project = getProjectBySlug(siteData, slug);
+  const showPrints = getPrintProducts(siteData).length > 0;
 
   if (!project) {
     return (
-      <PublicLayout mainClassName="project-page">
+      <PublicLayout mainClassName="project-page" showPrints={showPrints}>
         <section className="project-top">
           <div className="project-overview">
             <h1>Project not found</h1>
@@ -49,7 +50,7 @@ export default async function ProjectPage({ params }) {
   }
 
   return (
-    <PublicLayout mainClassName="project-page">
+    <PublicLayout mainClassName="project-page" showPrints={showPrints}>
       <section className="project-top">
         <div className="project-overview">
           {project.summary ? <p className="project-summary">{project.summary}</p> : null}

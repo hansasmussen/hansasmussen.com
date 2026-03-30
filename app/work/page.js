@@ -1,6 +1,6 @@
 import { PublicLayout } from "@/components/PublicLayout";
 import { WorkExperience } from "@/components/WorkExperience";
-import { getSiteData } from "@/lib/site-data";
+import { getPrintProducts, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -13,9 +13,10 @@ export const metadata = buildMetadata({
 
 export default async function WorkPage() {
   const siteData = await getSiteData();
+  const showPrints = getPrintProducts(siteData).length > 0;
 
   return (
-    <PublicLayout mainClassName="work-main">
+    <PublicLayout mainClassName="work-main" showPrints={showPrints}>
       <WorkExperience items={siteData.portfolioItems} manifesto={siteData.content.workManifesto} />
     </PublicLayout>
   );

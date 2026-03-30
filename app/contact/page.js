@@ -1,6 +1,6 @@
 import { ContactForm } from "@/components/ContactForm";
 import { PublicLayout } from "@/components/PublicLayout";
-import { getSiteData } from "@/lib/site-data";
+import { getPrintProducts, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -13,9 +13,10 @@ export const metadata = buildMetadata({
 
 export default async function ContactPage() {
   const siteData = await getSiteData();
+  const showPrints = getPrintProducts(siteData).length > 0;
 
   return (
-    <PublicLayout>
+    <PublicLayout showPrints={showPrints}>
       <div className="contact-shell">
         <section className="contact-layout">
           <div className="contact-copy">

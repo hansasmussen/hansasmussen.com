@@ -1,6 +1,6 @@
 import { Carousel } from "@/components/Carousel";
 import { PublicLayout } from "@/components/PublicLayout";
-import { getFeaturedSlides, getSiteData } from "@/lib/site-data";
+import { getFeaturedSlides, getPrintProducts, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -13,9 +13,10 @@ export const metadata = buildMetadata({
 export default async function HomePage() {
   const siteData = await getSiteData();
   const slides = getFeaturedSlides(siteData);
+  const showPrints = getPrintProducts(siteData).length > 0;
 
   return (
-    <PublicLayout>
+    <PublicLayout showPrints={showPrints}>
       <div className="home-main-content">
         <section className="hero">
           <div className="hero-copy hero-copy-centered">

@@ -2,6 +2,19 @@
 
 import { useEffect, useState } from "react";
 
+function sanitizeSlug(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64);
+}
+
+function parsePrice(value) {
+  const numeric = Number(String(value || "").replace(",", "."));
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
+}
+
 function measureItem(item) {
   return new Promise((resolve) => {
     if (item.mediaType === "video") {
@@ -194,6 +207,18 @@ export function AdminPortfolioEditorGrid({
                           projectSlug: String(formData.get("projectSlug") || "") || null,
                           alt: String(formData.get("alt") || "").trim(),
                           journalSlug: String(formData.get("journalSlug") || "") || null,
+                          print: {
+                            enabled: formData.get("printEnabled") === "on",
+                            title: String(formData.get("printTitle") || "").trim() || current.title,
+                            slug:
+                              String(formData.get("printSlug") || "").trim() ||
+                              sanitizeSlug(String(formData.get("printTitle") || "") || current.title),
+                            paper: String(formData.get("printPaper") || "").trim(),
+                            sizeOneLabel: String(formData.get("printSizeOneLabel") || "").trim(),
+                            sizeOnePrice: parsePrice(formData.get("printSizeOnePrice")),
+                            sizeTwoLabel: String(formData.get("printSizeTwoLabel") || "").trim(),
+                            sizeTwoPrice: parsePrice(formData.get("printSizeTwoPrice")),
+                          },
                         }));
                       }}
                     >
@@ -209,6 +234,69 @@ export function AdminPortfolioEditorGrid({
                         Journal slug
                         <input name="journalSlug" defaultValue={item.journalSlug || ""} />
                       </label>
+                      <label className="admin-inline-toggle">
+                        <input
+                          type="checkbox"
+                          name="printEnabled"
+                          defaultChecked={Boolean(item.print?.enabled)}
+                        />
+                        Sell as print
+                      </label>
+                      <label>
+                        Print title
+                        <input name="printTitle" defaultValue={item.print?.title || item.title || ""} />
+                      </label>
+                      <label>
+                        Print slug
+                        <input
+                          name="printSlug"
+                          defaultValue={item.print?.slug || sanitizeSlug(item.print?.title || item.title || "")}
+                        />
+                      </label>
+                      <label>
+                        Paper description
+                        <input name="printPaper" defaultValue={item.print?.paper || ""} />
+                      </label>
+                      <div className="admin-print-grid">
+                        <label>
+                          Size 1
+                          <input
+                            name="printSizeOneLabel"
+                            defaultValue={item.print?.sizeOneLabel || ""}
+                            placeholder="30 x 40 cm"
+                          />
+                        </label>
+                        <label>
+                          Price 1
+                          <input
+                            name="printSizeOnePrice"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            defaultValue={item.print?.sizeOnePrice ?? ""}
+                            placeholder="120"
+                          />
+                        </label>
+                        <label>
+                          Size 2
+                          <input
+                            name="printSizeTwoLabel"
+                            defaultValue={item.print?.sizeTwoLabel || ""}
+                            placeholder="50 x 70 cm"
+                          />
+                        </label>
+                        <label>
+                          Price 2
+                          <input
+                            name="printSizeTwoPrice"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            defaultValue={item.print?.sizeTwoPrice ?? ""}
+                            placeholder="220"
+                          />
+                        </label>
+                      </div>
                       <div className="admin-portfolio-card-actions">
                         {item.mediaType !== "video" ? (
                           <button
