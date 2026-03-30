@@ -453,11 +453,7 @@ h2 {
 }
 
 .project-media-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
-  column-count: auto;
-  align-items: start;
+  display: block;
 }
 
 .project-media-grid .portfolio-card {
@@ -2275,11 +2271,6 @@ h2 {
     gap: 18px;
   }
 
-  .project-media-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-
   .portfolio-column {
     gap: 18px;
   }
@@ -2356,10 +2347,6 @@ h2 {
 @media (max-width: 640px) {
   .portfolio[data-layout="manual-columns"] .portfolio-columns,
   .portfolio {
-    grid-template-columns: 1fr;
-  }
-
-  .project-media-grid {
     grid-template-columns: 1fr;
   }
 
