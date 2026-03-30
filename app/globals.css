@@ -103,6 +103,17 @@ a {
   color: var(--text);
 }
 
+.public-nav-note {
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
 .public-sidebar .social-nav {
   gap: 14px;
   margin-top: 46px;

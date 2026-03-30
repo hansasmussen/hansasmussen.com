@@ -9,7 +9,7 @@ export function PublicSidebar({ showPrints = false }) {
   const links = [
     { href: "/", label: "Home" },
     { href: "/work", label: "Work" },
-    ...(showPrints ? [{ href: "/prints", label: "Prints" }] : []),
+    ...(showPrints ? [{ href: "/prints", label: "Prints", note: "coming soon" }] : []),
     { href: "/contact", label: "Contact" },
   ];
 
@@ -29,6 +29,7 @@ export function PublicSidebar({ showPrints = false }) {
             return (
               <Link key={link.href} className={isActive ? "is-active" : ""} href={link.href}>
                 {link.label}
+                {link.note ? <span className="public-nav-note">{link.note}</span> : null}
               </Link>
             );
           })}

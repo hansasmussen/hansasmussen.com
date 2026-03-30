@@ -58,7 +58,7 @@ export default async function PrintsPage() {
               ) : (
                 <p className="print-card-placeholder">Print details are being prepared.</p>
               )}
-              <p className="print-card-note">Checkout and delivery flow comes next. This first pass is the curated shop overview.</p>
+              <p className="print-card-note">Soon available for order.</p>
             </div>
           </article>
         ))}
