@@ -641,6 +641,7 @@ h2 {
   content: "";
   opacity: 0;
   transition: opacity 220ms ease;
+  pointer-events: none;
 }
 
 .portfolio-card::before {
@@ -651,6 +652,7 @@ h2 {
   z-index: 1;
   opacity: 0;
   transition: opacity 220ms ease;
+  pointer-events: none;
 }
 
 .portfolio-link-card::before {
@@ -662,7 +664,7 @@ h2 {
 }
 
 .portfolio-print-card::before {
-  background: rgba(226, 87, 28, 0.56);
+  background: rgba(244, 241, 230, 0.08);
 }
 
 .portfolio-link::after {
@@ -715,7 +717,7 @@ h2 {
   z-index: 2;
   opacity: 0;
   transition: opacity 220ms ease;
-  color: var(--page-bg);
+  color: var(--text);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
   font-size: 0.84rem;
   font-weight: 700;
@@ -723,6 +725,7 @@ h2 {
   text-transform: uppercase;
   text-align: center;
   text-decoration: none;
+  pointer-events: auto;
 }
 
 .portfolio-print-badge {
