@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { AdminPortfolioEditorGrid } from "@/components/AdminPortfolioEditorGrid";
 import { defaultSiteData } from "@/lib/default-site-data";
 import { normalizeSiteData } from "@/lib/site-data";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 function createPresetId(prefix) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
@@ -39,24 +40,66 @@ function measureVideo(src) {
 }
 
 async function uploadFile(file, options = {}) {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("context", options.context || "portfolio");
-  if (options.projectSlug) {
-    formData.append("projectSlug", options.projectSlug);
-  }
-
-  const response = await fetch("/api/upload", {
+  const response = await fetch("/api/upload-url", {
     method: "POST",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      fileName: file.name,
+      contentType: file.type,
+      fileSize: file.size,
+      context: options.context || "portfolio",
+      projectSlug: options.projectSlug || "",
+    }),
   });
 
+  const payload = await parseJsonResponse(response);
+
   if (!response.ok) {
-    const errorPayload = await response.json().catch(() => null);
-    throw new Error(errorPayload?.error || "Upload failed.");
+    throw new Error(payload?.error || "Upload failed.");
   }
 
-  return response.json();
+  if (!payload?.path || !payload?.token || !payload?.bucket) {
+    throw new Error("Upload preparation failed.");
+  }
+
+  const supabase = createSupabaseBrowserClient();
+  const { error: uploadError } = await supabase.storage
+    .from(payload.bucket)
+    .uploadToSignedUrl(payload.path, payload.token, file, {
+      contentType: file.type || "application/octet-stream",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new Error(uploadError.message || "Upload failed.");
+  }
+
+  const { data: publicUrlData } = supabase.storage.from(payload.bucket).getPublicUrl(payload.path);
+
+  return {
+    src: publicUrlData.publicUrl,
+    path: payload.path,
+    bucket: payload.bucket,
+  };
+}
+
+async function parseJsonResponse(response) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return response.json().catch(() => null);
+  }
+
+  const text = await response.text().catch(() => "");
+  const compact = text.replace(/\s+/g, " ").trim();
+
+  return {
+    error: compact
+      ? `Server returned a non-JSON response: ${compact.slice(0, 160)}`
+      : "Server returned a non-JSON response.",
+  };
 }
 
 function blobExtension(type) {
@@ -137,11 +180,11 @@ async function rewriteProjectText(payload) {
   });
 
   if (!response.ok) {
-    const errorPayload = await response.json().catch(() => null);
+    const errorPayload = await parseJsonResponse(response);
     throw new Error(errorPayload?.error || "Rewrite failed.");
   }
 
-  return response.json();
+  return parseJsonResponse(response);
 }
 
 async function requestAltText(payload) {
@@ -154,11 +197,11 @@ async function requestAltText(payload) {
   });
 
   if (!response.ok) {
-    const errorPayload = await response.json().catch(() => null);
+    const errorPayload = await parseJsonResponse(response);
     throw new Error(errorPayload?.error || "Alt generation failed.");
   }
 
-  return response.json();
+  return parseJsonResponse(response);
 }
 
 function buildNextUploadTitle(existingItems, mediaType = "image", context = "portfolio") {
