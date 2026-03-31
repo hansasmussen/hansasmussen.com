@@ -41,9 +41,11 @@ function MockupSlide({ src, alt }) {
   return (
     <div className={`print-mockup ${orientationClass}`}>
       <div className="print-mockup-room" />
-      <div className="print-mockup-frame" style={{ "--print-ratio": ratio }}>
+      <div className="print-mockup-frame">
         <div className="print-mockup-mat">
-          <img src={src} alt={alt} loading="lazy" />
+          <div className="print-mockup-art" style={{ "--print-ratio": ratio }}>
+            <img src={src} alt={alt} loading="lazy" />
+          </div>
         </div>
       </div>
     </div>
