@@ -21,12 +21,6 @@ function buildQueueItems(files) {
   }));
 }
 
-function scheduleAddedQueueCleanup(setter, itemId) {
-  window.setTimeout(() => {
-    setter((current) => current.filter((item) => item.id !== itemId));
-  }, 600);
-}
-
 function measureImage(src) {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -421,8 +415,7 @@ export function AdminClient({ initialSiteData }) {
         uploads[uploads.length - 1] = uploadedItemWithAlt;
         nextQueueItems[index].status = "Added";
         nextQueueItems[index].progress = 100;
-        setQueueItems([...nextQueueItems]);
-        scheduleAddedQueueCleanup(setQueueItems, nextQueueItems[index].id);
+        setQueueItems((current) => current.filter((item) => item.id !== nextQueueItems[index].id));
       }
 
       await persist(
@@ -433,10 +426,14 @@ export function AdminClient({ initialSiteData }) {
         `Added ${uploads.length} item${uploads.length > 1 ? "s" : ""} to the layout.`
       );
     } catch (error) {
-      nextQueueItems.forEach((item) => {
-        if (item.status !== "Added") item.status = "Failed";
-      });
-      setQueueItems([...nextQueueItems]);
+      setQueueItems(
+        nextQueueItems
+          .filter((item) => item.status !== "Added")
+          .map((item) => ({
+            ...item,
+            status: "Failed",
+          }))
+      );
       setStatus(
         error instanceof Error ? `Upload failed: ${error.message}` : "Upload failed. Try again with another image."
       );
@@ -491,8 +488,7 @@ export function AdminClient({ initialSiteData }) {
         });
         nextQueueItems[index].status = "Added";
         nextQueueItems[index].progress = 100;
-        setProjectQueueItems([...nextQueueItems]);
-        scheduleAddedQueueCleanup(setProjectQueueItems, nextQueueItems[index].id);
+        setProjectQueueItems((current) => current.filter((item) => item.id !== nextQueueItems[index].id));
       }
 
       const nextProjects = projects.map((project) =>
@@ -512,10 +508,14 @@ export function AdminClient({ initialSiteData }) {
         `Added ${uploads.length} media item${uploads.length > 1 ? "s" : ""} to the project.`
       );
     } catch (error) {
-      nextQueueItems.forEach((item) => {
-        if (item.status !== "Added") item.status = "Failed";
-      });
-      setProjectQueueItems([...nextQueueItems]);
+      setProjectQueueItems(
+        nextQueueItems
+          .filter((item) => item.status !== "Added")
+          .map((item) => ({
+            ...item,
+            status: "Failed",
+          }))
+      );
       setStatus(
         error instanceof Error ? `Project upload failed: ${error.message}` : "Project upload failed."
       );
