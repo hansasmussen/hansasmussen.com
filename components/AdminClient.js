@@ -20,6 +20,12 @@ function buildQueueItems(files) {
   }));
 }
 
+function scheduleAddedQueueCleanup(setter, itemId) {
+  window.setTimeout(() => {
+    setter((current) => current.filter((item) => item.id !== itemId));
+  }, 600);
+}
+
 function measureImage(src) {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -382,6 +388,7 @@ export function AdminClient({ initialSiteData }) {
         uploads[uploads.length - 1] = uploadedItemWithAlt;
         nextQueueItems[index].status = "Added";
         setQueueItems([...nextQueueItems]);
+        scheduleAddedQueueCleanup(setQueueItems, nextQueueItems[index].id);
       }
 
       await persist(
@@ -445,6 +452,7 @@ export function AdminClient({ initialSiteData }) {
         });
         nextQueueItems[index].status = "Added";
         setProjectQueueItems([...nextQueueItems]);
+        scheduleAddedQueueCleanup(setProjectQueueItems, nextQueueItems[index].id);
       }
 
       const nextProjects = projects.map((project) =>
