@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { PrintProductCard } from "@/components/PrintProductCard";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getPrintProducts, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
@@ -9,14 +10,6 @@ export const metadata = buildMetadata({
   description: "Selected photography prints by Hans Asmussen, available in curated sizes on archival paper.",
   path: "/prints",
 });
-
-function formatPrice(price) {
-  return new Intl.NumberFormat("en-DK", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 export default async function PrintsPage() {
   const siteData = await getSiteData();
@@ -39,28 +32,7 @@ export default async function PrintsPage() {
 
       <section className="prints-grid" aria-label="Print products">
         {printProducts.map((product) => (
-          <article key={product.id} className="print-card">
-            <div className="print-card-media">
-              <img src={product.src} alt={product.alt} loading="lazy" />
-            </div>
-            <div className="print-card-copy">
-              <h2>{product.title}</h2>
-              {product.paper ? <p className="print-card-paper">{product.paper}</p> : null}
-              {product.sizeOptions.length ? (
-                <ul className="print-card-options">
-                  {product.sizeOptions.map((option) => (
-                    <li key={`${product.id}-${option.label}`}>
-                      <span>{option.label}</span>
-                      <span>{formatPrice(option.price)}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="print-card-placeholder">Print details are being prepared.</p>
-              )}
-              <p className="print-card-note">Soon available for order.</p>
-            </div>
-          </article>
+          <PrintProductCard key={product.id} product={product} />
         ))}
       </section>
     </PublicLayout>

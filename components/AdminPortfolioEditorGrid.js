@@ -213,6 +213,8 @@ export function AdminPortfolioEditorGrid({
                             slug:
                               String(formData.get("printSlug") || "").trim() ||
                               sanitizeSlug(String(formData.get("printTitle") || "") || current.title),
+                            description: String(formData.get("printDescription") || "").trim(),
+                            technical: String(formData.get("printTechnical") || "").trim(),
                             paper: String(formData.get("printPaper") || "").trim(),
                             sizeOneLabel: String(formData.get("printSizeOneLabel") || "").trim(),
                             sizeOnePrice: parsePrice(formData.get("printSizeOnePrice")),
@@ -256,6 +258,23 @@ export function AdminPortfolioEditorGrid({
                       <label>
                         Paper description
                         <input name="printPaper" defaultValue={item.print?.paper || ""} />
+                      </label>
+                      <label>
+                        Print description
+                        <textarea
+                          name="printDescription"
+                          rows="3"
+                          defaultValue={item.print?.description || ""}
+                          placeholder="Short story or description for the print page"
+                        />
+                      </label>
+                      <label>
+                        Technical
+                        <input
+                          name="printTechnical"
+                          defaultValue={item.print?.technical || ""}
+                          placeholder="Archival pigment print on Hahnemuhle Photo Rag 308 gsm"
+                        />
                       </label>
                       <div className="admin-print-grid">
                         <label>

@@ -1163,7 +1163,8 @@ h2 {
   color: var(--muted);
 }
 
-.admin-link-form input {
+.admin-link-form input,
+.admin-link-form textarea {
   width: 100%;
   min-height: 0;
   padding: 10px 12px;
@@ -1473,6 +1474,7 @@ h2 {
 .prints-page {
   display: grid;
   gap: 34px;
+  width: min(100%, 1240px);
 }
 
 .prints-intro {
@@ -1498,22 +1500,28 @@ h2 {
 .prints-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 26px;
+  gap: 40px 34px;
 }
 
 .print-card {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
-.print-card-media img {
+.print-card-media {
+  width: min(100%, 520px);
+}
+
+.print-card-media > img,
+.print-mockup {
   width: 100%;
   height: auto;
 }
 
 .print-card-copy {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  max-width: 520px;
 }
 
 .print-card-copy h2 {
@@ -1522,6 +1530,28 @@ h2 {
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.print-card-description {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.84rem;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+}
+
+.print-card-technical p {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.74rem;
+  line-height: 1.7;
+}
+
+.print-card-technical strong {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .print-card-paper,
@@ -1560,6 +1590,80 @@ h2 {
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.print-card-gallery-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 520px);
+}
+
+.print-card-gallery-nav p {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.print-gallery-arrow {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.print-mockup {
+  position: relative;
+  aspect-ratio: 1.186;
+  overflow: hidden;
+  background: #ddd2c7;
+}
+
+.print-mockup-room {
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/mockups/sofa-example.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.print-mockup-frame {
+  position: absolute;
+  left: 50%;
+  top: 32.5%;
+  transform: translate(-50%, -50%);
+  background: #111111;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.print-mockup-mat {
+  padding: 10px;
+  background: #f8f5ef;
+}
+
+.print-mockup-mat img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.print-mockup-a .print-mockup-frame {
+  width: 31%;
+  aspect-ratio: 1.24;
+}
+
+.print-mockup-b .print-mockup-frame {
+  width: 24%;
+  top: 34%;
+  aspect-ratio: 0.8;
 }
 
 .contact-links {
