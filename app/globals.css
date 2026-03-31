@@ -598,6 +598,15 @@ h2 {
   cursor: pointer;
 }
 
+.portfolio-preview-card {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .media-frame {
   display: block;
   position: relative;
@@ -642,6 +651,10 @@ h2 {
   background: rgba(226, 87, 28, 0.56);
 }
 
+.portfolio-preview-card::before {
+  background: rgba(244, 241, 230, 0.18);
+}
+
 .portfolio-link::after {
   content: attr(data-cta);
   position: absolute;
@@ -660,6 +673,45 @@ h2 {
   pointer-events: none;
 }
 
+.portfolio-preview-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(244, 241, 230, 0.92);
+  color: var(--page-bg);
+  background: rgba(226, 87, 28, 0.88);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.portfolio-print-badge {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2;
+  padding: 8px 12px;
+  background: rgba(226, 87, 28, 0.92);
+  color: var(--page-bg);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
 .portfolio-card:hover img,
 .portfolio-card:hover video {
   transform: scale(1.015);
@@ -668,6 +720,17 @@ h2 {
 
 .portfolio-card:hover::before,
 .portfolio-card:hover::after {
+  opacity: 1;
+}
+
+.portfolio-preview-card:hover .portfolio-preview-icon,
+.portfolio-preview-card:focus-visible .portfolio-preview-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+.portfolio-print-enabled:hover .portfolio-print-badge,
+.portfolio-print-enabled:focus-visible .portfolio-print-badge {
   opacity: 1;
 }
 

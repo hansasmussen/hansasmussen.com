@@ -134,7 +134,11 @@ export function WorkExperience({ items, manifesto }) {
       ) : (
         <section className="work-gallery work-gallery-embedded">
           <div className="work-gallery-inner">
-            <PortfolioGrid items={items} layout="manual-columns" />
+            <PortfolioGrid
+              items={items}
+              layout="manual-columns"
+              onPreviewItem={(index) => setFocusedMode(true, index)}
+            />
           </div>
         </section>
       )}

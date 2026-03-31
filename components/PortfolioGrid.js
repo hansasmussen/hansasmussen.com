@@ -111,7 +111,7 @@ function buildBalancedColumns(items, columnCount, ratios = new Map()) {
   return columns;
 }
 
-function renderPortfolioCard(item) {
+function renderPortfolioCard(item, index, onPreviewItem) {
   const overviewItem = {
     ...item,
     span: "single",
@@ -120,9 +120,12 @@ function renderPortfolioCard(item) {
   const hasJournalLink = !item.projectSlug && Boolean(item.journalSlug);
   const href = hasProjectLink ? `/work/${item.projectSlug}` : hasJournalLink ? `/journal/${item.journalSlug}` : null;
   const ctaLabel = hasProjectLink ? "See more images" : hasJournalLink ? "Read the journal" : "";
+  const hasPreviewAction = !href && typeof onPreviewItem === "function";
   const cardClassName = [
     "portfolio-card",
     href ? "portfolio-link" : "",
+    hasPreviewAction ? "portfolio-preview-card" : "",
+    item.print?.enabled ? "portfolio-print-enabled" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -136,11 +139,32 @@ function renderPortfolioCard(item) {
       data-title={overviewItem.title}
       data-year={overviewItem.year}
       data-cta={ctaLabel}
+      data-print-cta={item.print?.enabled ? "Buy limited print" : ""}
     >
       <div className="media-frame">
         <PortfolioMedia item={overviewItem} />
       </div>
+      {item.print?.enabled ? <span className="portfolio-print-badge">Buy limited print</span> : null}
     </Link>
+  ) : hasPreviewAction ? (
+    <button
+      key={item.id}
+      type="button"
+      className={cardClassName}
+      data-focus={overviewItem.focus}
+      data-title={overviewItem.title}
+      data-year={overviewItem.year}
+      data-print-cta={item.print?.enabled ? "Buy limited print" : ""}
+      onClick={() => onPreviewItem(index)}
+    >
+      <div className="media-frame">
+        <PortfolioMedia item={overviewItem} />
+      </div>
+      <span className="portfolio-preview-icon" aria-hidden="true">
+        +
+      </span>
+      {item.print?.enabled ? <span className="portfolio-print-badge">Buy limited print</span> : null}
+    </button>
   ) : (
     <article
       key={item.id}
@@ -148,15 +172,23 @@ function renderPortfolioCard(item) {
       data-focus={overviewItem.focus}
       data-title={overviewItem.title}
       data-year={overviewItem.year}
+      data-print-cta={item.print?.enabled ? "Buy limited print" : ""}
     >
       <div className="media-frame">
         <PortfolioMedia item={overviewItem} />
       </div>
+      {item.print?.enabled ? <span className="portfolio-print-badge">Buy limited print</span> : null}
     </article>
   );
 }
 
-export function PortfolioGrid({ items, className = "", preview = false, layout = "precise" }) {
+export function PortfolioGrid({
+  items,
+  className = "",
+  preview = false,
+  layout = "precise",
+  onPreviewItem,
+}) {
   const gridClassName = useMemo(() => `portfolio ${className}`.trim(), [className]);
   const columnCount = useResponsiveColumnCount(layout === "manual-columns");
   const [ratios, setRatios] = useState(() => new Map());
@@ -191,11 +223,14 @@ export function PortfolioGrid({ items, className = "", preview = false, layout =
         aria-label={preview ? "Admin preview" : "Portfolio"}
       >
         <div className="portfolio-columns">
-          {columns.map((columnItems, columnIndex) => (
-            <div key={`column-${columnIndex + 1}`} className="portfolio-column">
-              {columnItems.map((item) => renderPortfolioCard(item))}
-            </div>
-          ))}
+            {columns.map((columnItems, columnIndex) => (
+              <div key={`column-${columnIndex + 1}`} className="portfolio-column">
+              {columnItems.map((item) => {
+                const index = items.findIndex((entry) => entry.id === item.id);
+                return renderPortfolioCard(item, index, onPreviewItem);
+              })}
+              </div>
+            ))}
         </div>
       </section>
     );
@@ -207,7 +242,7 @@ export function PortfolioGrid({ items, className = "", preview = false, layout =
       data-layout={layout}
       aria-label={preview ? "Admin preview" : "Portfolio"}
     >
-      {items.map((item) => renderPortfolioCard(item))}
+      {items.map((item, index) => renderPortfolioCard(item, index, onPreviewItem))}
     </section>
   );
 }
