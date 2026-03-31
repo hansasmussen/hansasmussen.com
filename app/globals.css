@@ -1598,38 +1598,36 @@ h2 {
 
 .prints-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 56px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px 36px;
 }
 
 .print-card {
   display: grid;
   gap: 18px;
-  justify-items: center;
+  align-content: start;
 }
 
 .print-card-media {
   width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 .print-card-media > img {
-  width: auto;
+  width: 100%;
   height: auto;
-  max-width: min(100%, 960px);
-  max-height: min(80vh, 1080px);
+  max-width: none;
+  max-height: none;
 }
 
 .print-mockup {
-  width: min(100%, 960px);
+  width: 100%;
   height: auto;
 }
 
 .print-card-copy {
   display: grid;
   gap: 12px;
-  width: min(100%, 960px);
+  width: 100%;
 }
 
 .print-card-copy h2 {
