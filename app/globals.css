@@ -1164,7 +1164,8 @@ h2 {
 }
 
 .admin-link-form input,
-.admin-link-form textarea {
+.admin-link-form textarea,
+.admin-link-form select {
   width: 100%;
   min-height: 0;
   padding: 10px 12px;
@@ -1189,6 +1190,38 @@ h2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.admin-print-presets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 16px 0 20px;
+}
+
+.admin-preset-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-preset-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-preset-card button {
+  width: fit-content;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .admin-print-picker {
@@ -2740,6 +2773,7 @@ h2 {
   .campaign-detail-layout,
   .campaign-grid,
   .campaign-list,
+  .admin-print-presets,
   .prints-grid {
     grid-template-columns: 1fr;
   }

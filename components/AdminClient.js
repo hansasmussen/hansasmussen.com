@@ -5,6 +5,10 @@ import { AdminPortfolioEditorGrid } from "@/components/AdminPortfolioEditorGrid"
 import { defaultSiteData } from "@/lib/default-site-data";
 import { normalizeSiteData } from "@/lib/site-data";
 
+function createPresetId(prefix) {
+  return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
+}
+
 function buildQueueItems(files) {
   return files.map((file) => ({
     id: crypto.randomUUID(),
@@ -278,6 +282,8 @@ export function AdminClient({ initialSiteData }) {
   const availablePrintItems = siteData.portfolioItems.filter(
     (item) => item.mediaType === "image" && !item.print?.enabled
   );
+  const printPaperOptions = content.printPaperOptions || [];
+  const printSizeOptions = content.printSizeOptions || [];
   const [expandedProjectSlug, setExpandedProjectSlug] = useState(
     () => (normalizeSiteData(initialSiteData).projects || [])[0]?.slug || null
   );
@@ -545,9 +551,12 @@ export function AdminClient({ initialSiteData }) {
                 slug: item.print?.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
                 description: item.print?.description || "",
                 technical: item.print?.technical || "",
+                paperId: item.print?.paperId || "",
                 paper: item.print?.paper || "",
+                sizeOneId: item.print?.sizeOneId || "",
                 sizeOneLabel: item.print?.sizeOneLabel || "",
                 sizeOnePrice: item.print?.sizeOnePrice || null,
+                sizeTwoId: item.print?.sizeTwoId || "",
                 sizeTwoLabel: item.print?.sizeTwoLabel || "",
                 sizeTwoPrice: item.print?.sizeTwoPrice || null,
               },
@@ -576,6 +585,147 @@ export function AdminClient({ initialSiteData }) {
     };
 
     void persist(nextSiteData, "Removed image from prints.");
+  };
+
+  const addPrintPaperOption = () => {
+    const nextOptions = [
+      ...printPaperOptions,
+      {
+        id: createPresetId("paper"),
+        label: "",
+        description: "",
+      },
+    ];
+
+    void persist(
+      {
+        ...siteData,
+        content: {
+          ...content,
+          printPaperOptions: nextOptions,
+        },
+      },
+      "Added paper option."
+    );
+  };
+
+  const updatePrintPaperOption = (optionId, updates) => {
+    const nextOptions = printPaperOptions.map((option) =>
+      option.id === optionId
+        ? {
+            ...option,
+            ...updates,
+          }
+        : option
+    );
+
+    void persist({
+      ...siteData,
+      content: {
+        ...content,
+        printPaperOptions: nextOptions,
+      },
+    });
+  };
+
+  const removePrintPaperOption = (optionId) => {
+    const nextOptions = printPaperOptions.filter((option) => option.id !== optionId);
+    const nextPortfolioItems = siteData.portfolioItems.map((item) =>
+      item.print?.paperId === optionId
+        ? {
+            ...item,
+            print: {
+              ...item.print,
+              paperId: "",
+            },
+          }
+        : item
+    );
+
+    void persist(
+      {
+        ...siteData,
+        content: {
+          ...content,
+          printPaperOptions: nextOptions,
+        },
+        portfolioItems: nextPortfolioItems,
+      },
+      "Removed paper option."
+    );
+  };
+
+  const addPrintSizeOption = () => {
+    const nextOptions = [
+      ...printSizeOptions,
+      {
+        id: createPresetId("size"),
+        label: "",
+        price: null,
+      },
+    ];
+
+    void persist(
+      {
+        ...siteData,
+        content: {
+          ...content,
+          printSizeOptions: nextOptions,
+        },
+      },
+      "Added size option."
+    );
+  };
+
+  const updatePrintSizeOption = (optionId, updates) => {
+    const nextOptions = printSizeOptions.map((option) =>
+      option.id === optionId
+        ? {
+            ...option,
+            ...updates,
+            price:
+              updates.price === "" || updates.price === null || updates.price === undefined
+                ? null
+                : Number(updates.price),
+          }
+        : option
+    );
+
+    void persist({
+      ...siteData,
+      content: {
+        ...content,
+        printSizeOptions: nextOptions,
+      },
+    });
+  };
+
+  const removePrintSizeOption = (optionId) => {
+    const nextOptions = printSizeOptions.filter((option) => option.id !== optionId);
+    const nextPortfolioItems = siteData.portfolioItems.map((item) =>
+      item.print?.sizeOneId === optionId || item.print?.sizeTwoId === optionId
+        ? {
+            ...item,
+            print: {
+              ...item.print,
+              sizeOneId: item.print?.sizeOneId === optionId ? "" : item.print?.sizeOneId || "",
+              sizeTwoId: item.print?.sizeTwoId === optionId ? "" : item.print?.sizeTwoId || "",
+            },
+          }
+        : item
+    );
+
+    void persist(
+      {
+        ...siteData,
+        content: {
+          ...content,
+          printSizeOptions: nextOptions,
+        },
+        portfolioItems: nextPortfolioItems,
+      },
+      "Removed size option."
+    );
   };
 
   return (
@@ -784,6 +934,89 @@ export function AdminClient({ initialSiteData }) {
                 </button>
               </div>
 
+              <section className="admin-print-presets">
+                <div className="admin-content-editor">
+                  <div className="admin-section-heading">
+                    <p className="eyebrow">Paper presets</p>
+                    <h2>Create reusable paper options for your print products.</h2>
+                  </div>
+                  <div className="admin-copy-actions">
+                    <button className="admin-save" type="button" onClick={addPrintPaperOption}>
+                      Add paper
+                    </button>
+                  </div>
+                  <div className="admin-preset-list">
+                    {printPaperOptions.map((option) => (
+                      <article key={option.id} className="admin-preset-card">
+                        <label>
+                          Paper name
+                          <input
+                            value={option.label}
+                            onChange={(event) =>
+                              updatePrintPaperOption(option.id, { label: event.target.value })
+                            }
+                          />
+                        </label>
+                        <label>
+                          Description
+                          <input
+                            value={option.description}
+                            onChange={(event) =>
+                              updatePrintPaperOption(option.id, { description: event.target.value })
+                            }
+                          />
+                        </label>
+                        <button type="button" onClick={() => removePrintPaperOption(option.id)}>
+                          Remove
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="admin-content-editor">
+                  <div className="admin-section-heading">
+                    <p className="eyebrow">Size presets</p>
+                    <h2>Create reusable size and price combinations.</h2>
+                  </div>
+                  <div className="admin-copy-actions">
+                    <button className="admin-save" type="button" onClick={addPrintSizeOption}>
+                      Add size
+                    </button>
+                  </div>
+                  <div className="admin-preset-list">
+                    {printSizeOptions.map((option) => (
+                      <article key={option.id} className="admin-preset-card">
+                        <label>
+                          Size label
+                          <input
+                            value={option.label}
+                            onChange={(event) =>
+                              updatePrintSizeOption(option.id, { label: event.target.value })
+                            }
+                          />
+                        </label>
+                        <label>
+                          Price
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={option.price ?? ""}
+                            onChange={(event) =>
+                              updatePrintSizeOption(option.id, { price: event.target.value })
+                            }
+                          />
+                        </label>
+                        <button type="button" onClick={() => removePrintSizeOption(option.id)}>
+                          Remove
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
               {showPrintPicker ? (
                 <section className="admin-print-picker">
                   {availablePrintItems.length ? (
@@ -817,6 +1050,8 @@ export function AdminClient({ initialSiteData }) {
                 altingItemId={altingItemId}
                 editorMode="prints"
                 disablePrint={disablePrint}
+                printPaperOptions={printPaperOptions}
+                printSizeOptions={printSizeOptions}
               />
             </section>
           ) : null}

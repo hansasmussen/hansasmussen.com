@@ -64,6 +64,53 @@ function useResponsiveColumnCount(enabled) {
   return columnCount;
 }
 
+function measureItem(item) {
+  return new Promise((resolve) => {
+    if (item.mediaType === "video") {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        resolve({
+          width: video.videoWidth || 1,
+          height: video.videoHeight || 1,
+        });
+      };
+      video.onerror = () => resolve({ width: 1, height: 1.35 });
+      video.src = item.src;
+      return;
+    }
+
+    const image = new Image();
+    image.onload = () =>
+      resolve({
+        width: image.naturalWidth || 1,
+        height: image.naturalHeight || 1,
+      });
+    image.onerror = () => resolve({ width: 1, height: 1.35 });
+    image.src = item.src;
+  });
+}
+
+function buildBalancedColumns(items, columnCount, ratios = new Map()) {
+  const columns = Array.from({ length: columnCount }, () => []);
+  const heights = Array.from({ length: columnCount }, () => 0);
+
+  items.forEach((item) => {
+    let shortestColumnIndex = 0;
+
+    for (let index = 1; index < columnCount; index += 1) {
+      if (heights[index] < heights[shortestColumnIndex]) {
+        shortestColumnIndex = index;
+      }
+    }
+
+    columns[shortestColumnIndex].push(item);
+    heights[shortestColumnIndex] += ratios.get(item.id) || 1.35;
+  });
+
+  return columns;
+}
+
 function renderPortfolioCard(item) {
   const overviewItem = {
     ...item,
@@ -112,11 +159,30 @@ function renderPortfolioCard(item) {
 export function PortfolioGrid({ items, className = "", preview = false, layout = "precise" }) {
   const gridClassName = useMemo(() => `portfolio ${className}`.trim(), [className]);
   const columnCount = useResponsiveColumnCount(layout === "manual-columns");
+  const [ratios, setRatios] = useState(() => new Map());
+
+  useEffect(() => {
+    if (layout !== "manual-columns") return undefined;
+
+    let isCancelled = false;
+
+    Promise.all(
+      items.map(async (item) => {
+        const dimensions = await measureItem(item);
+        return [item.id, dimensions.height / Math.max(dimensions.width, 1)];
+      })
+    ).then((entries) => {
+      if (isCancelled) return;
+      setRatios(new Map(entries));
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [items, layout]);
 
   if (layout === "manual-columns") {
-    const columns = Array.from({ length: columnCount }, (_, columnIndex) =>
-      items.filter((_, itemIndex) => itemIndex % columnCount === columnIndex)
-    );
+    const columns = buildBalancedColumns(items, columnCount, ratios);
 
     return (
       <section

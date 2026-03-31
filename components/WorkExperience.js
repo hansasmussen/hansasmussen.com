@@ -96,6 +96,7 @@ export function WorkExperience({ items, manifesto }) {
     <>
       {isFocused ? <div className="focused-page-overlay" aria-hidden="true" /> : null}
       <section className="intro work-intro">
+        {isFocused ? <div className="work-intro-overlay-lift" aria-hidden="true" /> : null}
         <p className="work-manifesto">{manifesto}</p>
         <div className="work-view-actions">
           <button className="work-view-link" type="button" onClick={() => setFocusedMode(!isFocused, focusedIndex)}>

@@ -10,11 +10,6 @@ function sanitizeSlug(value) {
     .slice(0, 64);
 }
 
-function parsePrice(value) {
-  const numeric = Number(String(value || "").replace(",", "."));
-  return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
-}
-
 function measureItem(item) {
   return new Promise((resolve) => {
     if (item.mediaType === "video") {
@@ -114,6 +109,8 @@ export function AdminPortfolioEditorGrid({
   altingItemId,
   editorMode = "portfolio",
   disablePrint,
+  printPaperOptions = [],
+  printSizeOptions = [],
 }) {
   const columnCount = useResponsiveColumnCount();
   const [ratios, setRatios] = useState(() => new Map());
@@ -218,11 +215,29 @@ export function AdminPortfolioEditorGrid({
                                     sanitizeSlug(String(formData.get("printTitle") || "") || current.title),
                                   description: String(formData.get("printDescription") || "").trim(),
                                   technical: String(formData.get("printTechnical") || "").trim(),
-                                  paper: String(formData.get("printPaper") || "").trim(),
-                                  sizeOneLabel: String(formData.get("printSizeOneLabel") || "").trim(),
-                                  sizeOnePrice: parsePrice(formData.get("printSizeOnePrice")),
-                                  sizeTwoLabel: String(formData.get("printSizeTwoLabel") || "").trim(),
-                                  sizeTwoPrice: parsePrice(formData.get("printSizeTwoPrice")),
+                                  paperId: String(formData.get("printPaperId") || "").trim(),
+                                  paper:
+                                    printPaperOptions.find(
+                                      (option) => option.id === String(formData.get("printPaperId") || "").trim()
+                                    )?.description || "",
+                                  sizeOneId: String(formData.get("printSizeOneId") || "").trim(),
+                                  sizeOneLabel:
+                                    printSizeOptions.find(
+                                      (option) => option.id === String(formData.get("printSizeOneId") || "").trim()
+                                    )?.label || "",
+                                  sizeOnePrice:
+                                    printSizeOptions.find(
+                                      (option) => option.id === String(formData.get("printSizeOneId") || "").trim()
+                                    )?.price || null,
+                                  sizeTwoId: String(formData.get("printSizeTwoId") || "").trim(),
+                                  sizeTwoLabel:
+                                    printSizeOptions.find(
+                                      (option) => option.id === String(formData.get("printSizeTwoId") || "").trim()
+                                    )?.label || "",
+                                  sizeTwoPrice:
+                                    printSizeOptions.find(
+                                      (option) => option.id === String(formData.get("printSizeTwoId") || "").trim()
+                                    )?.price || null,
                                 },
                               }
                             : {
@@ -272,47 +287,40 @@ export function AdminPortfolioEditorGrid({
                             />
                           </label>
                           <label>
-                            Paper description
-                            <input name="printPaper" defaultValue={item.print?.paper || ""} />
+                            Paper preset
+                            <select name="printPaperId" defaultValue={item.print?.paperId || ""}>
+                              <option value="">Choose paper</option>
+                              {printPaperOptions.map((option) => (
+                                <option key={option.id} value={option.id}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
                           </label>
                           <div className="admin-print-grid">
                             <label>
                               Size 1
-                              <input
-                                name="printSizeOneLabel"
-                                defaultValue={item.print?.sizeOneLabel || ""}
-                                placeholder="30 x 40 cm"
-                              />
-                            </label>
-                            <label>
-                              Price 1
-                              <input
-                                name="printSizeOnePrice"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                defaultValue={item.print?.sizeOnePrice ?? ""}
-                                placeholder="120"
-                              />
+                              <select name="printSizeOneId" defaultValue={item.print?.sizeOneId || ""}>
+                                <option value="">Choose size</option>
+                                {printSizeOptions.map((option) => (
+                                  <option key={option.id} value={option.id}>
+                                    {option.label}
+                                    {option.price ? ` - ${option.price}` : ""}
+                                  </option>
+                                ))}
+                              </select>
                             </label>
                             <label>
                               Size 2
-                              <input
-                                name="printSizeTwoLabel"
-                                defaultValue={item.print?.sizeTwoLabel || ""}
-                                placeholder="50 x 70 cm"
-                              />
-                            </label>
-                            <label>
-                              Price 2
-                              <input
-                                name="printSizeTwoPrice"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                defaultValue={item.print?.sizeTwoPrice ?? ""}
-                                placeholder="220"
-                              />
+                              <select name="printSizeTwoId" defaultValue={item.print?.sizeTwoId || ""}>
+                                <option value="">Choose size</option>
+                                {printSizeOptions.map((option) => (
+                                  <option key={option.id} value={option.id}>
+                                    {option.label}
+                                    {option.price ? ` - ${option.price}` : ""}
+                                  </option>
+                                ))}
+                              </select>
                             </label>
                           </div>
                         </>
