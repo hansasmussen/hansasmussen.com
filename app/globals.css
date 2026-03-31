@@ -593,17 +593,19 @@ h2 {
   background: transparent;
 }
 
-.portfolio-link {
+.portfolio-link,
+.portfolio-preview-action {
   color: inherit;
   cursor: pointer;
-}
-
-.portfolio-preview-card {
+  display: block;
   border: 0;
   padding: 0;
   background: transparent;
-  color: inherit;
   text-align: left;
+  width: 100%;
+}
+
+.portfolio-preview-card {
   cursor: pointer;
 }
 
@@ -647,7 +649,7 @@ h2 {
   transition: opacity 220ms ease;
 }
 
-.portfolio-link::before {
+.portfolio-link-card::before {
   background: rgba(226, 87, 28, 0.56);
 }
 
@@ -663,6 +665,8 @@ h2 {
   place-items: center;
   padding: 24px;
   z-index: 2;
+  opacity: 0;
+  transition: opacity 220ms ease;
   color: var(--page-bg);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
   font-size: 0.84rem;
@@ -708,8 +712,8 @@ h2 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0;
-  pointer-events: none;
   transition: opacity 220ms ease, transform 220ms ease;
+  text-decoration: none;
 }
 
 .portfolio-card:hover img,
@@ -719,7 +723,7 @@ h2 {
 }
 
 .portfolio-card:hover::before,
-.portfolio-card:hover::after {
+.portfolio-link-card:hover .portfolio-link::after {
   opacity: 1;
 }
 

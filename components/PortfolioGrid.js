@@ -123,61 +123,49 @@ function renderPortfolioCard(item, index, onPreviewItem) {
   const hasPreviewAction = !href && typeof onPreviewItem === "function";
   const cardClassName = [
     "portfolio-card",
-    href ? "portfolio-link" : "",
+    href ? "portfolio-link-card" : "",
     hasPreviewAction ? "portfolio-preview-card" : "",
     item.print?.enabled ? "portfolio-print-enabled" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
-  return href ? (
-    <Link
-      key={item.id}
-      href={href}
-      className={cardClassName}
-      data-focus={overviewItem.focus}
-      data-title={overviewItem.title}
-      data-year={overviewItem.year}
-      data-cta={ctaLabel}
-      data-print-cta={item.print?.enabled ? "Buy limited print" : ""}
-    >
-      <div className="media-frame">
-        <PortfolioMedia item={overviewItem} />
-      </div>
-      {item.print?.enabled ? <span className="portfolio-print-badge">Buy limited print</span> : null}
-    </Link>
-  ) : hasPreviewAction ? (
-    <button
-      key={item.id}
-      type="button"
-      className={cardClassName}
-      data-focus={overviewItem.focus}
-      data-title={overviewItem.title}
-      data-year={overviewItem.year}
-      data-print-cta={item.print?.enabled ? "Buy limited print" : ""}
-      onClick={() => onPreviewItem(index)}
-    >
-      <div className="media-frame">
-        <PortfolioMedia item={overviewItem} />
-      </div>
-      <span className="portfolio-preview-icon" aria-hidden="true">
-        +
-      </span>
-      {item.print?.enabled ? <span className="portfolio-print-badge">Buy limited print</span> : null}
-    </button>
-  ) : (
-    <article
-      key={item.id}
-      className={cardClassName}
-      data-focus={overviewItem.focus}
-      data-title={overviewItem.title}
-      data-year={overviewItem.year}
-      data-print-cta={item.print?.enabled ? "Buy limited print" : ""}
-    >
-      <div className="media-frame">
-        <PortfolioMedia item={overviewItem} />
-      </div>
-      {item.print?.enabled ? <span className="portfolio-print-badge">Buy limited print</span> : null}
+  const cardProps = {
+    key: item.id,
+    className: cardClassName,
+    "data-focus": overviewItem.focus,
+    "data-title": overviewItem.title,
+    "data-year": overviewItem.year,
+    "data-print-cta": item.print?.enabled ? "Buy limited print" : "",
+  };
+
+  return (
+    <article {...cardProps}>
+      {href ? (
+        <Link href={href} className="portfolio-link" data-cta={ctaLabel}>
+          <div className="media-frame">
+            <PortfolioMedia item={overviewItem} />
+          </div>
+        </Link>
+      ) : hasPreviewAction ? (
+        <button type="button" className="portfolio-preview-action" onClick={() => onPreviewItem(index)}>
+          <div className="media-frame">
+            <PortfolioMedia item={overviewItem} />
+          </div>
+          <span className="portfolio-preview-icon" aria-hidden="true">
+            +
+          </span>
+        </button>
+      ) : (
+        <div className="media-frame">
+          <PortfolioMedia item={overviewItem} />
+        </div>
+      )}
+      {item.print?.enabled ? (
+        <Link href="/prints" className="portfolio-print-badge">
+          Buy limited print
+        </Link>
+      ) : null}
     </article>
   );
 }
