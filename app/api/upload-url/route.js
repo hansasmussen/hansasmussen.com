@@ -102,6 +102,7 @@ export async function POST(request) {
     return NextResponse.json({
       bucket,
       path: filePath,
+      signedUrl: data.signedUrl,
       token: data.token,
     });
   } catch (error) {

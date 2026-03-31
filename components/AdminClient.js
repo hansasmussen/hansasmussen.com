@@ -16,6 +16,7 @@ function buildQueueItems(files) {
     name: file.name,
     preview: URL.createObjectURL(file),
     status: "Waiting",
+    progress: 0,
     mediaType: file.type.startsWith("video/") ? "video" : "image",
   }));
 }
@@ -66,22 +67,45 @@ async function uploadFile(file, options = {}) {
     throw new Error(payload?.error || "Upload failed.");
   }
 
-  if (!payload?.path || !payload?.token || !payload?.bucket) {
+  if (!payload?.path || !payload?.token || !payload?.bucket || !payload?.signedUrl) {
     throw new Error("Upload preparation failed.");
   }
 
+  const formData = new FormData();
+  formData.append("cacheControl", "3600");
+  formData.append("", file);
+
+  await new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("PUT", payload.signedUrl, true);
+    request.setRequestHeader("x-upsert", "false");
+
+    request.upload.onprogress = (event) => {
+      if (!event.lengthComputable) return;
+      const progress = Math.max(0, Math.min(100, Math.round((event.loaded / event.total) * 100)));
+      options.onProgress?.(progress);
+    };
+
+    request.onerror = () => reject(new Error("Upload failed."));
+    request.onload = () => {
+      if (request.status >= 200 && request.status < 300) {
+        options.onProgress?.(100);
+        resolve(null);
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(request.responseText || "{}");
+        reject(new Error(parsed.error || parsed.message || "Upload failed."));
+      } catch {
+        reject(new Error("Upload failed."));
+      }
+    };
+
+    request.send(formData);
+  });
+
   const supabase = createSupabaseBrowserClient();
-  const { error: uploadError } = await supabase.storage
-    .from(payload.bucket)
-    .uploadToSignedUrl(payload.path, payload.token, file, {
-      contentType: file.type || "application/octet-stream",
-      upsert: false,
-    });
-
-  if (uploadError) {
-    throw new Error(uploadError.message || "Upload failed.");
-  }
-
   const { data: publicUrlData } = supabase.storage.from(payload.bucket).getPublicUrl(payload.path);
 
   return {
@@ -377,8 +401,15 @@ export function AdminClient({ initialSiteData }) {
         setQueueItems([...nextQueueItems]);
         const optimizedFile = await optimizeImageForUpload(files[index]);
         nextQueueItems[index].status = "Uploading";
+        nextQueueItems[index].progress = 0;
         setQueueItems([...nextQueueItems]);
-        const uploadedAsset = await uploadFile(optimizedFile, { context: "portfolio" });
+        const uploadedAsset = await uploadFile(optimizedFile, {
+          context: "portfolio",
+          onProgress: (progress) => {
+            nextQueueItems[index].progress = progress;
+            setQueueItems([...nextQueueItems]);
+          },
+        });
         const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset, {
           existingItems: [...siteData.portfolioItems, ...uploads],
           context: "portfolio",
@@ -387,6 +418,7 @@ export function AdminClient({ initialSiteData }) {
         uploads.push(uploadedItem);
         uploads[uploads.length - 1] = uploadedItemWithAlt;
         nextQueueItems[index].status = "Added";
+        nextQueueItems[index].progress = 100;
         setQueueItems([...nextQueueItems]);
         scheduleAddedQueueCleanup(setQueueItems, nextQueueItems[index].id);
       }
@@ -431,10 +463,15 @@ export function AdminClient({ initialSiteData }) {
         setProjectQueueItems([...nextQueueItems]);
         const optimizedFile = await optimizeImageForUpload(files[index]);
         nextQueueItems[index].status = "Uploading";
+        nextQueueItems[index].progress = 0;
         setProjectQueueItems([...nextQueueItems]);
         const uploadedAsset = await uploadFile(optimizedFile, {
           context: "project",
           projectSlug,
+          onProgress: (progress) => {
+            nextQueueItems[index].progress = progress;
+            setProjectQueueItems([...nextQueueItems]);
+          },
         });
         const uploadedItem = await fileToPortfolioItem(optimizedFile, uploadedAsset, {
           existingItems: currentProject?.media || [],
@@ -451,6 +488,7 @@ export function AdminClient({ initialSiteData }) {
           span: uploadedItemWithAlt.span,
         });
         nextQueueItems[index].status = "Added";
+        nextQueueItems[index].progress = 100;
         setProjectQueueItems([...nextQueueItems]);
         scheduleAddedQueueCleanup(setProjectQueueItems, nextQueueItems[index].id);
       }
@@ -917,7 +955,11 @@ export function AdminClient({ initialSiteData }) {
                     )}
                     <div className="upload-queue-copy">
                       <strong>{item.name}</strong>
-                      <span>{item.status}</span>
+                      <span>
+                        {item.status === "Uploading"
+                          ? `Uploading ${item.progress || 0}%`
+                          : item.status}
+                      </span>
                     </div>
                   </article>
                 ))}
@@ -1343,7 +1385,11 @@ export function AdminClient({ initialSiteData }) {
                                 )}
                                 <div className="upload-queue-copy">
                                   <strong>{item.name}</strong>
-                                  <span>{item.status}</span>
+                                  <span>
+                                    {item.status === "Uploading"
+                                      ? `Uploading ${item.progress || 0}%`
+                                      : item.status}
+                                  </span>
                                 </div>
                               </article>
                             ))}
