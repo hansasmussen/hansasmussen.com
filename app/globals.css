@@ -1191,6 +1191,56 @@ h2 {
   gap: 8px;
 }
 
+.admin-print-picker {
+  display: grid;
+  gap: 14px;
+  margin: 10px 0 18px;
+}
+
+.admin-print-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-print-picker-card {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-print-picker-card img {
+  width: 100%;
+  height: auto;
+}
+
+.admin-print-picker-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-print-picker-copy strong,
+.admin-print-picker-empty {
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.74rem;
+  line-height: 1.6;
+}
+
+.admin-print-picker-copy button {
+  width: fit-content;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .admin-link-form button {
   width: fit-content;
   border: 1px solid var(--line);
@@ -1509,7 +1559,7 @@ h2 {
 }
 
 .print-card-media {
-  width: min(100%, 620px);
+  width: min(100%, 680px);
 }
 
 .print-card-media > img,
@@ -1521,7 +1571,7 @@ h2 {
 .print-card-copy {
   display: grid;
   gap: 12px;
-  max-width: 620px;
+  max-width: 680px;
 }
 
 .print-card-copy h2 {
@@ -1550,7 +1600,7 @@ h2 {
 }
 
 .print-card-technical {
-  margin-top: 12px;
+  margin-top: 18px;
 }
 
 .print-card-technical strong {
@@ -1587,7 +1637,7 @@ h2 {
 .print-card-cta {
   display: grid;
   gap: 16px;
-  margin-top: 18px;
+  margin-top: 24px;
   padding: 18px 20px;
   border: 1px solid var(--line);
 }
@@ -1608,7 +1658,7 @@ h2 {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: min(100%, 620px);
+  width: min(100%, 680px);
 }
 
 .print-card-gallery-nav p {

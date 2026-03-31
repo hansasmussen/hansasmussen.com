@@ -226,6 +226,7 @@ async function fileToPortfolioItem(file, uploadedAsset, options = {}) {
 export function AdminClient({ initialSiteData }) {
   const [siteData, setSiteData] = useState(() => normalizeSiteData(initialSiteData));
   const [activeTab, setActiveTab] = useState("home");
+  const [showPrintPicker, setShowPrintPicker] = useState(false);
   const [status, setStatus] = useState("No uploads in progress.");
   const [queueItems, setQueueItems] = useState([]);
   const [projectQueueItems, setProjectQueueItems] = useState([]);
@@ -273,6 +274,10 @@ export function AdminClient({ initialSiteData }) {
 
   const projects = siteData.projects || [];
   const journalPosts = siteData.journalPosts || [];
+  const printItems = siteData.portfolioItems.filter((item) => item.mediaType === "image" && item.print?.enabled);
+  const availablePrintItems = siteData.portfolioItems.filter(
+    (item) => item.mediaType === "image" && !item.print?.enabled
+  );
   const [expandedProjectSlug, setExpandedProjectSlug] = useState(
     () => (normalizeSiteData(initialSiteData).projects || [])[0]?.slug || null
   );
@@ -527,6 +532,52 @@ export function AdminClient({ initialSiteData }) {
     );
   };
 
+  const enablePrint = (itemId) => {
+    const nextSiteData = {
+      ...siteData,
+      portfolioItems: siteData.portfolioItems.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              print: {
+                enabled: true,
+                title: item.print?.title || item.title,
+                slug: item.print?.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+                description: item.print?.description || "",
+                technical: item.print?.technical || "",
+                paper: item.print?.paper || "",
+                sizeOneLabel: item.print?.sizeOneLabel || "",
+                sizeOnePrice: item.print?.sizeOnePrice || null,
+                sizeTwoLabel: item.print?.sizeTwoLabel || "",
+                sizeTwoPrice: item.print?.sizeTwoPrice || null,
+              },
+            }
+          : item
+      ),
+    };
+
+    void persist(nextSiteData, "Added image to prints.");
+  };
+
+  const disablePrint = (itemId) => {
+    const nextSiteData = {
+      ...siteData,
+      portfolioItems: siteData.portfolioItems.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              print: {
+                ...item.print,
+                enabled: false,
+              },
+            }
+          : item
+      ),
+    };
+
+    void persist(nextSiteData, "Removed image from prints.");
+  };
+
   return (
     <>
       <main className="admin-page">
@@ -723,8 +774,40 @@ export function AdminClient({ initialSiteData }) {
                 </form>
               </section>
 
+              <div className="admin-copy-actions">
+                <button
+                  className="admin-save"
+                  type="button"
+                  onClick={() => setShowPrintPicker((current) => !current)}
+                >
+                  {showPrintPicker ? "Hide print picker" : "Add more prints"}
+                </button>
+              </div>
+
+              {showPrintPicker ? (
+                <section className="admin-print-picker">
+                  {availablePrintItems.length ? (
+                    <div className="admin-print-picker-grid">
+                      {availablePrintItems.map((item) => (
+                        <article key={item.id} className="admin-print-picker-card">
+                          <img src={item.src} alt={item.alt} loading="lazy" />
+                          <div className="admin-print-picker-copy">
+                            <strong>{item.title}</strong>
+                            <button type="button" onClick={() => enablePrint(item.id)}>
+                              Add as print
+                            </button>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="admin-print-picker-empty">All available images are already added to prints.</p>
+                  )}
+                </section>
+              ) : null}
+
               <AdminPortfolioEditorGrid
-                items={siteData.portfolioItems.filter((item) => item.mediaType === "image")}
+                items={printItems}
                 draggedId={draggedId}
                 setDraggedId={setDraggedId}
                 reorderItems={reorderItems}
@@ -733,6 +816,7 @@ export function AdminClient({ initialSiteData }) {
                 generateAltText={generateAltText}
                 altingItemId={altingItemId}
                 editorMode="prints"
+                disablePrint={disablePrint}
               />
             </section>
           ) : null}

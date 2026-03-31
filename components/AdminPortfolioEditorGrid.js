@@ -113,6 +113,7 @@ export function AdminPortfolioEditorGrid({
   generateAltText,
   altingItemId,
   editorMode = "portfolio",
+  disablePrint,
 }) {
   const columnCount = useResponsiveColumnCount();
   const [ratios, setRatios] = useState(() => new Map());
@@ -350,11 +351,15 @@ export function AdminPortfolioEditorGrid({
                           </button>
                         ) : null}
                         <button type="submit">Save</button>
-                        {!isPrintMode ? (
+                        {isPrintMode ? (
+                          <button type="button" onClick={() => disablePrint?.(item.id)}>
+                            Remove from prints
+                          </button>
+                        ) : (
                           <button type="button" onClick={() => removeItem(item.id)}>
                             Remove
                           </button>
-                        ) : null}
+                        )}
                       </div>
                     </form>
                   ) : null}
