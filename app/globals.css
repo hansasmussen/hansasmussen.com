@@ -1582,29 +1582,38 @@ h2 {
 
 .prints-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 42px 36px;
+  grid-template-columns: 1fr;
+  gap: 56px;
 }
 
 .print-card {
   display: grid;
-  gap: 14px;
+  gap: 18px;
+  justify-items: center;
 }
 
 .print-card-media {
-  width: min(100%, 680px);
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-.print-card-media > img,
+.print-card-media > img {
+  width: auto;
+  height: auto;
+  max-width: min(100%, 960px);
+  max-height: min(80vh, 1080px);
+}
+
 .print-mockup {
-  width: 100%;
+  width: min(100%, 960px);
   height: auto;
 }
 
 .print-card-copy {
   display: grid;
   gap: 12px;
-  max-width: 680px;
+  width: min(100%, 960px);
 }
 
 .print-card-copy h2 {
