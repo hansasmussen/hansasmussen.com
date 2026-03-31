@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 function formatPrice(price) {
   return new Intl.NumberFormat("en-DK", {
@@ -10,9 +10,9 @@ function formatPrice(price) {
   }).format(price);
 }
 
-function MockupSlide({ src, alt, variant }) {
+function MockupSlide({ src, alt }) {
   return (
-    <div className={`print-mockup print-mockup-${variant}`}>
+    <div className="print-mockup">
       <div className="print-mockup-room" />
       <div className="print-mockup-frame">
         <div className="print-mockup-mat">
@@ -26,25 +26,16 @@ function MockupSlide({ src, alt, variant }) {
 export function PrintProductCard({ product }) {
   const [slideIndex, setSlideIndex] = useState(0);
 
-  const slides = useMemo(
-    () => [
-      {
-        key: `${product.id}-artwork`,
-        type: "image",
-      },
-      {
-        key: `${product.id}-mockup-a`,
-        type: "mockup",
-        variant: "a",
-      },
-      {
-        key: `${product.id}-mockup-b`,
-        type: "mockup",
-        variant: "b",
-      },
-    ],
-    [product.id]
-  );
+  const slides = [
+    {
+      key: `${product.id}-artwork`,
+      type: "image",
+    },
+    {
+      key: `${product.id}-mockup`,
+      type: "mockup",
+    },
+  ];
 
   const currentSlide = slides[slideIndex];
 
@@ -54,7 +45,7 @@ export function PrintProductCard({ product }) {
         {currentSlide.type === "image" ? (
           <img src={product.src} alt={product.alt} loading="lazy" />
         ) : (
-          <MockupSlide src={product.src} alt={product.alt} variant={currentSlide.variant} />
+          <MockupSlide src={product.src} alt={product.alt} />
         )}
       </div>
 
