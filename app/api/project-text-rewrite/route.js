@@ -20,6 +20,9 @@ Task:
 - Preserve the real meaning, core facts, mood, and technical truth of the original text.
 - Do not invent gear, locations, people, or events that are not already implied.
 - Keep the writing vivid, cinematic, and sharp, but still readable.
+- Favor a brighter, more playful, more light-struck feeling over anything bleak, menacing, or self-destructive.
+- Lean toward wonder, charge, motion, mischief, and beauty rather than dread, decay, or collapse.
+- Make it feel alive, stylish, and slightly wild, not dark or aggressive.
 
 Return JSON only in this exact shape:
 {
@@ -33,6 +36,8 @@ Rules:
 - Keep body to roughly the same length as the original unless the original is very sparse.
 - Do not use quotation marks around the whole text.
 - Do not add commentary or explanation outside the JSON.
+- Avoid references to doom, madness, violence, ruin, paranoia, or chemical excess unless the source text already clearly requires it.
+- Prefer visual surprise, sensual detail, and playful momentum.
 
 Input title:
 ${title || ""}
