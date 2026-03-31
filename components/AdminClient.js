@@ -358,6 +358,8 @@ export function AdminClient({ initialSiteData }) {
   );
   const printPaperOptions = content.printPaperOptions || [];
   const printSizeOptions = content.printSizeOptions || [];
+  const visibleQueueItems = queueItems.filter((item) => item.status !== "Added");
+  const visibleProjectQueueItems = projectQueueItems.filter((item) => item.status !== "Added");
   const [expandedProjectSlug, setExpandedProjectSlug] = useState(
     () => (normalizeSiteData(initialSiteData).projects || [])[0]?.slug || null
   );
@@ -945,8 +947,9 @@ export function AdminClient({ initialSiteData }) {
                 </button>
               </div>
 
+              {visibleQueueItems.length ? (
               <section className="upload-queue" aria-label="Upload queue">
-                {queueItems.map((item) => (
+                {visibleQueueItems.map((item) => (
                   <article key={item.id} className={`upload-queue-item upload-status-${item.status.toLowerCase()}`}>
                     {item.mediaType === "video" ? (
                       <video src={item.preview} muted playsInline />
@@ -964,6 +967,7 @@ export function AdminClient({ initialSiteData }) {
                   </article>
                 ))}
               </section>
+              ) : null}
 
               <AdminPortfolioEditorGrid
                 items={siteData.portfolioItems}
@@ -1374,9 +1378,9 @@ export function AdminClient({ initialSiteData }) {
                           </label>
                         </div>
 
-                        {projectQueueItems.length ? (
+                        {visibleProjectQueueItems.length ? (
                           <section className="upload-queue" aria-label="Project upload queue">
-                            {projectQueueItems.map((item) => (
+                            {visibleProjectQueueItems.map((item) => (
                               <article key={item.id} className={`upload-queue-item upload-status-${item.status.toLowerCase()}`}>
                                 {item.mediaType === "video" ? (
                                   <video src={item.preview} muted playsInline />
