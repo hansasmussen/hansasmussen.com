@@ -1755,9 +1755,10 @@ h2 {
 .print-mockup-frame {
   position: absolute;
   left: 50%;
-  top: 35%;
+  top: 31%;
   transform: translate(-50%, -50%);
-  width: min(32%, 290px);
+  width: min(24%, 240px);
+  aspect-ratio: var(--print-ratio, 1);
   background: #111111;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
@@ -1772,6 +1773,21 @@ h2 {
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+.print-mockup.is-landscape .print-mockup-frame {
+  top: 31%;
+  width: min(31%, 320px);
+}
+
+.print-mockup.is-square .print-mockup-frame {
+  top: 31.5%;
+  width: min(24%, 240px);
+}
+
+.print-mockup.is-portrait .print-mockup-frame {
+  top: 27%;
+  width: min(17%, 170px);
 }
 
 .contact-links {
