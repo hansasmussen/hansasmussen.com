@@ -292,7 +292,7 @@ export function AdminPortfolioEditorGrid({
                               <option value="">Choose paper</option>
                               {printPaperOptions.map((option) => (
                                 <option key={option.id} value={option.id}>
-                                  {option.label}
+                                  {option.label || "Untitled paper"}
                                 </option>
                               ))}
                             </select>
@@ -304,7 +304,7 @@ export function AdminPortfolioEditorGrid({
                                 <option value="">Choose size</option>
                                 {printSizeOptions.map((option) => (
                                   <option key={option.id} value={option.id}>
-                                    {option.label}
+                                    {option.label || "Untitled size"}
                                     {option.price ? ` - ${option.price}` : ""}
                                   </option>
                                 ))}
@@ -316,7 +316,7 @@ export function AdminPortfolioEditorGrid({
                                 <option value="">Choose size</option>
                                 {printSizeOptions.map((option) => (
                                   <option key={option.id} value={option.id}>
-                                    {option.label}
+                                    {option.label || "Untitled size"}
                                     {option.price ? ` - ${option.price}` : ""}
                                   </option>
                                 ))}
