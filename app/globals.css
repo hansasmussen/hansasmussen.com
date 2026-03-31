@@ -710,16 +710,22 @@ h2 {
 
 .portfolio-print-center-link {
   position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 12px;
   z-index: 2;
   opacity: 0;
-  transition: opacity 220ms ease;
+  transition: opacity 220ms ease, transform 220ms ease;
   color: var(--text);
+  background: rgba(244, 241, 230, 0.96);
+  border: 1px solid rgba(226, 87, 28, 0.72);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.84rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -766,6 +772,7 @@ h2 {
 .portfolio-print-card:hover .portfolio-print-center-link,
 .portfolio-print-card:focus-within .portfolio-print-center-link {
   opacity: 1;
+  transform: translate(-50%, -50%) scale(1.02);
 }
 
 .portfolio-print-enabled:hover .portfolio-print-badge,
