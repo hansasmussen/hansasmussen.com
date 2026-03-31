@@ -924,16 +924,6 @@ export function AdminClient({ initialSiteData }) {
                 </form>
               </section>
 
-              <div className="admin-copy-actions">
-                <button
-                  className="admin-save"
-                  type="button"
-                  onClick={() => setShowPrintPicker((current) => !current)}
-                >
-                  {showPrintPicker ? "Hide print picker" : "Add more prints"}
-                </button>
-              </div>
-
               <section className="admin-print-presets">
                 <div className="admin-content-editor">
                   <div className="admin-section-heading">
@@ -1038,6 +1028,16 @@ export function AdminClient({ initialSiteData }) {
                   )}
                 </section>
               ) : null}
+
+              <div className="admin-copy-actions">
+                <button
+                  className="admin-save"
+                  type="button"
+                  onClick={() => setShowPrintPicker((current) => !current)}
+                >
+                  {showPrintPicker ? "Hide print picker" : "Add more prints"}
+                </button>
+              </div>
 
               <AdminPortfolioEditorGrid
                 items={printItems}
