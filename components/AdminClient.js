@@ -231,6 +231,7 @@ export function AdminClient({ initialSiteData }) {
   const [siteData, setSiteData] = useState(() => normalizeSiteData(initialSiteData));
   const [activeTab, setActiveTab] = useState("home");
   const [showPrintPicker, setShowPrintPicker] = useState(false);
+  const [expandedPrintPresetPanel, setExpandedPrintPresetPanel] = useState("paper");
   const [status, setStatus] = useState("No uploads in progress.");
   const [queueItems, setQueueItems] = useState([]);
   const [projectQueueItems, setProjectQueueItems] = useState([]);
@@ -925,86 +926,120 @@ export function AdminClient({ initialSiteData }) {
               </section>
 
               <section className="admin-print-presets">
-                <div className="admin-content-editor">
-                  <div className="admin-section-heading">
-                    <p className="eyebrow">Paper presets</p>
-                    <h2>Create reusable paper options for your print products.</h2>
-                  </div>
-                  <div className="admin-copy-actions">
-                    <button className="admin-save" type="button" onClick={addPrintPaperOption}>
-                      Add paper
-                    </button>
-                  </div>
-                  <div className="admin-preset-list">
-                    {printPaperOptions.map((option) => (
-                      <article key={option.id} className="admin-preset-card">
-                        <label>
-                          Paper name
-                          <input
-                            value={option.label}
-                            onChange={(event) =>
-                              updatePrintPaperOption(option.id, { label: event.target.value })
-                            }
-                          />
-                        </label>
-                        <label>
-                          Description
-                          <input
-                            value={option.description}
-                            onChange={(event) =>
-                              updatePrintPaperOption(option.id, { description: event.target.value })
-                            }
-                          />
-                        </label>
-                        <button type="button" onClick={() => removePrintPaperOption(option.id)}>
-                          Remove
+                <section
+                  className={`admin-content-editor admin-accordion ${expandedPrintPresetPanel === "paper" ? "is-open" : ""}`}
+                >
+                  <button
+                    className="admin-accordion-trigger"
+                    type="button"
+                    onClick={() =>
+                      setExpandedPrintPresetPanel((current) => (current === "paper" ? null : "paper"))
+                    }
+                  >
+                    <div>
+                      <p className="eyebrow">Paper presets</p>
+                      <h2>Reusable paper options for your print products.</h2>
+                    </div>
+                    <span className="admin-accordion-icon" aria-hidden="true">
+                      {expandedPrintPresetPanel === "paper" ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedPrintPresetPanel === "paper" ? (
+                    <>
+                      <div className="admin-copy-actions">
+                        <button className="admin-save" type="button" onClick={addPrintPaperOption}>
+                          Add paper
                         </button>
-                      </article>
-                    ))}
-                  </div>
-                </div>
+                      </div>
+                      <div className="admin-preset-list">
+                        {printPaperOptions.map((option) => (
+                          <article key={option.id} className="admin-preset-card">
+                            <label>
+                              Paper name
+                              <input
+                                value={option.label}
+                                onChange={(event) =>
+                                  updatePrintPaperOption(option.id, { label: event.target.value })
+                                }
+                              />
+                            </label>
+                            <label>
+                              Description
+                              <input
+                                value={option.description}
+                                onChange={(event) =>
+                                  updatePrintPaperOption(option.id, { description: event.target.value })
+                                }
+                              />
+                            </label>
+                            <button type="button" onClick={() => removePrintPaperOption(option.id)}>
+                              Remove
+                            </button>
+                          </article>
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
+                </section>
 
-                <div className="admin-content-editor">
-                  <div className="admin-section-heading">
-                    <p className="eyebrow">Size presets</p>
-                    <h2>Create reusable size and price combinations.</h2>
-                  </div>
-                  <div className="admin-copy-actions">
-                    <button className="admin-save" type="button" onClick={addPrintSizeOption}>
-                      Add size
-                    </button>
-                  </div>
-                  <div className="admin-preset-list">
-                    {printSizeOptions.map((option) => (
-                      <article key={option.id} className="admin-preset-card">
-                        <label>
-                          Size label
-                          <input
-                            value={option.label}
-                            onChange={(event) =>
-                              updatePrintSizeOption(option.id, { label: event.target.value })
-                            }
-                          />
-                        </label>
-                        <label>
-                          Price
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={option.price ?? ""}
-                            onChange={(event) =>
-                              updatePrintSizeOption(option.id, { price: event.target.value })
-                            }
-                          />
-                        </label>
-                        <button type="button" onClick={() => removePrintSizeOption(option.id)}>
-                          Remove
+                <section
+                  className={`admin-content-editor admin-accordion ${expandedPrintPresetPanel === "size" ? "is-open" : ""}`}
+                >
+                  <button
+                    className="admin-accordion-trigger"
+                    type="button"
+                    onClick={() =>
+                      setExpandedPrintPresetPanel((current) => (current === "size" ? null : "size"))
+                    }
+                  >
+                    <div>
+                      <p className="eyebrow">Size presets</p>
+                      <h2>Reusable size and price combinations.</h2>
+                    </div>
+                    <span className="admin-accordion-icon" aria-hidden="true">
+                      {expandedPrintPresetPanel === "size" ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedPrintPresetPanel === "size" ? (
+                    <>
+                      <div className="admin-copy-actions">
+                        <button className="admin-save" type="button" onClick={addPrintSizeOption}>
+                          Add size
                         </button>
-                      </article>
-                    ))}
-                  </div>
-                </div>
+                      </div>
+                      <div className="admin-preset-list">
+                        {printSizeOptions.map((option) => (
+                          <article key={option.id} className="admin-preset-card">
+                            <label>
+                              Size label
+                              <input
+                                value={option.label}
+                                onChange={(event) =>
+                                  updatePrintSizeOption(option.id, { label: event.target.value })
+                                }
+                              />
+                            </label>
+                            <label>
+                              Price
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={option.price ?? ""}
+                                onChange={(event) =>
+                                  updatePrintSizeOption(option.id, { price: event.target.value })
+                                }
+                              />
+                            </label>
+                            <button type="button" onClick={() => removePrintSizeOption(option.id)}>
+                              Remove
+                            </button>
+                          </article>
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
+                </section>
               </section>
 
               {showPrintPicker ? (
