@@ -281,6 +281,12 @@ export function AdminClient({ initialSiteData }) {
     () => ({
       home: { homeManifesto: content.homeManifesto || "" },
       work: { workManifesto: content.workManifesto || "" },
+      prints: {
+        printsHeader: content.printsHeader || "Selected works available as prints.",
+        printsBody:
+          content.printsBody ||
+          "A curated selection of images available in small editions and printed on carefully chosen paper. Sizes and stock vary from work to work.",
+      },
       contact: {
         contactHeader: content.contactHeader || "",
         contactBody: content.contactBody || "",
@@ -539,7 +545,7 @@ export function AdminClient({ initialSiteData }) {
           </p>
 
           <div className="admin-tabs" role="tablist" aria-label="Admin sections">
-            {["home", "portfolio", "projects", "journal", "contact"].map((tab) => (
+            {["home", "portfolio", "prints", "projects", "journal", "contact"].map((tab) => (
               <button
                 key={tab}
                 className={`admin-tab ${activeTab === tab ? "is-active" : ""}`}
@@ -673,6 +679,60 @@ export function AdminClient({ initialSiteData }) {
                 removeItem={removeItem}
                 generateAltText={generateAltText}
                 altingItemId={altingItemId}
+                editorMode="portfolio"
+              />
+            </section>
+          ) : null}
+
+          {activeTab === "prints" ? (
+            <section className="admin-panel-section is-active">
+              <section className="admin-content-editor">
+                <div className="admin-section-heading">
+                  <p className="eyebrow">Prints</p>
+                  <h2>Edit the print landing intro and choose which images should be sold as prints.</h2>
+                </div>
+                <form
+                  className="admin-copy-form"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const formData = new FormData(event.currentTarget);
+                    void persist(
+                      {
+                        ...siteData,
+                        content: {
+                          ...content,
+                          printsHeader: String(formData.get("printsHeader") || ""),
+                          printsBody: String(formData.get("printsBody") || ""),
+                        },
+                      },
+                      "Prints text saved."
+                    );
+                  }}
+                >
+                  <label>
+                    Prints header
+                    <textarea name="printsHeader" rows="3" defaultValue={forms.prints.printsHeader} />
+                  </label>
+                  <label>
+                    Prints body
+                    <textarea name="printsBody" rows="5" defaultValue={forms.prints.printsBody} />
+                  </label>
+                  <div className="admin-copy-actions">
+                    <button className="admin-save" type="submit">Save prints text</button>
+                  </div>
+                </form>
+              </section>
+
+              <AdminPortfolioEditorGrid
+                items={siteData.portfolioItems.filter((item) => item.mediaType === "image")}
+                draggedId={draggedId}
+                setDraggedId={setDraggedId}
+                reorderItems={reorderItems}
+                updateItem={updateItem}
+                removeItem={removeItem}
+                generateAltText={generateAltText}
+                altingItemId={altingItemId}
+                editorMode="prints"
               />
             </section>
           ) : null}

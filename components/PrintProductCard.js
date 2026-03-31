@@ -90,20 +90,22 @@ export function PrintProductCard({ product }) {
             </p>
           </div>
         ) : null}
-        {product.paper ? <p className="print-card-paper">{product.paper}</p> : null}
-        {product.sizeOptions.length ? (
-          <ul className="print-card-options">
-            {product.sizeOptions.map((option) => (
-              <li key={`${product.id}-${option.label}`}>
-                <span>{option.label}</span>
-                <span>{formatPrice(option.price)}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="print-card-placeholder">Print details are being prepared.</p>
-        )}
-        <p className="print-card-note">Soon available for order.</p>
+        <div className="print-card-cta">
+          {product.paper ? <p className="print-card-paper">{product.paper}</p> : null}
+          {product.sizeOptions.length ? (
+            <ul className="print-card-options">
+              {product.sizeOptions.map((option) => (
+                <li key={`${product.id}-${option.label}`}>
+                  <span>{option.label}</span>
+                  <span>{formatPrice(option.price)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="print-card-placeholder">Print details are being prepared.</p>
+          )}
+          <p className="print-card-note">Soon available for order.</p>
+        </div>
       </div>
     </article>
   );

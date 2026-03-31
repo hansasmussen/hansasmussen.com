@@ -112,6 +112,7 @@ export function AdminPortfolioEditorGrid({
   removeItem,
   generateAltText,
   altingItemId,
+  editorMode = "portfolio",
 }) {
   const columnCount = useResponsiveColumnCount();
   const [ratios, setRatios] = useState(() => new Map());
@@ -137,6 +138,8 @@ export function AdminPortfolioEditorGrid({
   }, [items]);
 
   const columns = buildBalancedColumns(items, columnCount, ratios);
+
+  const isPrintMode = editorMode === "prints";
 
   return (
     <section className="admin-portfolio-grid" aria-label="Portfolio items">
@@ -204,120 +207,132 @@ export function AdminPortfolioEditorGrid({
                         const formData = new FormData(event.currentTarget);
                         updateItem(item.id, (current) => ({
                           ...current,
-                          projectSlug: String(formData.get("projectSlug") || "") || null,
-                          alt: String(formData.get("alt") || "").trim(),
-                          journalSlug: String(formData.get("journalSlug") || "") || null,
-                          print: {
-                            enabled: formData.get("printEnabled") === "on",
-                            title: String(formData.get("printTitle") || "").trim() || current.title,
-                            slug:
-                              String(formData.get("printSlug") || "").trim() ||
-                              sanitizeSlug(String(formData.get("printTitle") || "") || current.title),
-                            description: String(formData.get("printDescription") || "").trim(),
-                            technical: String(formData.get("printTechnical") || "").trim(),
-                            paper: String(formData.get("printPaper") || "").trim(),
-                            sizeOneLabel: String(formData.get("printSizeOneLabel") || "").trim(),
-                            sizeOnePrice: parsePrice(formData.get("printSizeOnePrice")),
-                            sizeTwoLabel: String(formData.get("printSizeTwoLabel") || "").trim(),
-                            sizeTwoPrice: parsePrice(formData.get("printSizeTwoPrice")),
-                          },
+                          ...(isPrintMode
+                            ? {
+                                print: {
+                                  enabled: formData.get("printEnabled") === "on",
+                                  title: String(formData.get("printTitle") || "").trim() || current.title,
+                                  slug:
+                                    String(formData.get("printSlug") || "").trim() ||
+                                    sanitizeSlug(String(formData.get("printTitle") || "") || current.title),
+                                  description: String(formData.get("printDescription") || "").trim(),
+                                  technical: String(formData.get("printTechnical") || "").trim(),
+                                  paper: String(formData.get("printPaper") || "").trim(),
+                                  sizeOneLabel: String(formData.get("printSizeOneLabel") || "").trim(),
+                                  sizeOnePrice: parsePrice(formData.get("printSizeOnePrice")),
+                                  sizeTwoLabel: String(formData.get("printSizeTwoLabel") || "").trim(),
+                                  sizeTwoPrice: parsePrice(formData.get("printSizeTwoPrice")),
+                                },
+                              }
+                            : {
+                                projectSlug: String(formData.get("projectSlug") || "") || null,
+                                alt: String(formData.get("alt") || "").trim(),
+                                journalSlug: String(formData.get("journalSlug") || "") || null,
+                              }),
                         }));
                       }}
                     >
-                      <label>
-                        Project slug
-                        <input name="projectSlug" defaultValue={item.projectSlug || ""} />
-                      </label>
-                      <label>
-                        Alt text
-                        <input name="alt" defaultValue={item.alt || ""} />
-                      </label>
-                      <label>
-                        Journal slug
-                        <input name="journalSlug" defaultValue={item.journalSlug || ""} />
-                      </label>
-                      <label className="admin-inline-toggle">
-                        <input
-                          type="checkbox"
-                          name="printEnabled"
-                          defaultChecked={Boolean(item.print?.enabled)}
-                        />
-                        Sell as print
-                      </label>
-                      <label>
-                        Print title
-                        <input name="printTitle" defaultValue={item.print?.title || item.title || ""} />
-                      </label>
-                      <label>
-                        Print slug
-                        <input
-                          name="printSlug"
-                          defaultValue={item.print?.slug || sanitizeSlug(item.print?.title || item.title || "")}
-                        />
-                      </label>
-                      <label>
-                        Paper description
-                        <input name="printPaper" defaultValue={item.print?.paper || ""} />
-                      </label>
-                      <label>
-                        Print description
-                        <textarea
-                          name="printDescription"
-                          rows="3"
-                          defaultValue={item.print?.description || ""}
-                          placeholder="Short story or description for the print page"
-                        />
-                      </label>
-                      <label>
-                        Technical
-                        <input
-                          name="printTechnical"
-                          defaultValue={item.print?.technical || ""}
-                          placeholder="Archival pigment print on Hahnemuhle Photo Rag 308 gsm"
-                        />
-                      </label>
-                      <div className="admin-print-grid">
-                        <label>
-                          Size 1
-                          <input
-                            name="printSizeOneLabel"
-                            defaultValue={item.print?.sizeOneLabel || ""}
-                            placeholder="30 x 40 cm"
-                          />
-                        </label>
-                        <label>
-                          Price 1
-                          <input
-                            name="printSizeOnePrice"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            defaultValue={item.print?.sizeOnePrice ?? ""}
-                            placeholder="120"
-                          />
-                        </label>
-                        <label>
-                          Size 2
-                          <input
-                            name="printSizeTwoLabel"
-                            defaultValue={item.print?.sizeTwoLabel || ""}
-                            placeholder="50 x 70 cm"
-                          />
-                        </label>
-                        <label>
-                          Price 2
-                          <input
-                            name="printSizeTwoPrice"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            defaultValue={item.print?.sizeTwoPrice ?? ""}
-                            placeholder="220"
-                          />
-                        </label>
-                      </div>
+                      {isPrintMode ? (
+                        <>
+                          <label className="admin-inline-toggle">
+                            <input
+                              type="checkbox"
+                              name="printEnabled"
+                              defaultChecked={Boolean(item.print?.enabled)}
+                            />
+                            Sell as print
+                          </label>
+                          <label>
+                            Print title
+                            <input name="printTitle" defaultValue={item.print?.title || item.title || ""} />
+                          </label>
+                          <label>
+                            Print slug
+                            <input
+                              name="printSlug"
+                              defaultValue={item.print?.slug || sanitizeSlug(item.print?.title || item.title || "")}
+                            />
+                          </label>
+                          <label>
+                            Print description
+                            <textarea
+                              name="printDescription"
+                              rows="3"
+                              defaultValue={item.print?.description || ""}
+                              placeholder="Short story or description for the print page"
+                            />
+                          </label>
+                          <label>
+                            Technical
+                            <input
+                              name="printTechnical"
+                              defaultValue={item.print?.technical || ""}
+                              placeholder="Archival pigment print on Hahnemuhle Photo Rag 308 gsm"
+                            />
+                          </label>
+                          <label>
+                            Paper description
+                            <input name="printPaper" defaultValue={item.print?.paper || ""} />
+                          </label>
+                          <div className="admin-print-grid">
+                            <label>
+                              Size 1
+                              <input
+                                name="printSizeOneLabel"
+                                defaultValue={item.print?.sizeOneLabel || ""}
+                                placeholder="30 x 40 cm"
+                              />
+                            </label>
+                            <label>
+                              Price 1
+                              <input
+                                name="printSizeOnePrice"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                defaultValue={item.print?.sizeOnePrice ?? ""}
+                                placeholder="120"
+                              />
+                            </label>
+                            <label>
+                              Size 2
+                              <input
+                                name="printSizeTwoLabel"
+                                defaultValue={item.print?.sizeTwoLabel || ""}
+                                placeholder="50 x 70 cm"
+                              />
+                            </label>
+                            <label>
+                              Price 2
+                              <input
+                                name="printSizeTwoPrice"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                defaultValue={item.print?.sizeTwoPrice ?? ""}
+                                placeholder="220"
+                              />
+                            </label>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <label>
+                            Project slug
+                            <input name="projectSlug" defaultValue={item.projectSlug || ""} />
+                          </label>
+                          <label>
+                            Alt text
+                            <input name="alt" defaultValue={item.alt || ""} />
+                          </label>
+                          <label>
+                            Journal slug
+                            <input name="journalSlug" defaultValue={item.journalSlug || ""} />
+                          </label>
+                        </>
+                      )}
                       <div className="admin-portfolio-card-actions">
-                        {item.mediaType !== "video" ? (
+                        {!isPrintMode && item.mediaType !== "video" ? (
                           <button
                             type="button"
                             onClick={() => generateAltText(item.id)}
@@ -326,16 +341,20 @@ export function AdminPortfolioEditorGrid({
                             {altingItemId === item.id ? "Alting..." : "Auto alt"}
                           </button>
                         ) : null}
-                        <button
-                          type="button"
-                          onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
-                        >
-                          {item.featured ? "In carousel" : "Carousel"}
-                        </button>
+                        {!isPrintMode ? (
+                          <button
+                            type="button"
+                            onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
+                          >
+                            {item.featured ? "In carousel" : "Carousel"}
+                          </button>
+                        ) : null}
                         <button type="submit">Save</button>
-                        <button type="button" onClick={() => removeItem(item.id)}>
-                          Remove
-                        </button>
+                        {!isPrintMode ? (
+                          <button type="button" onClick={() => removeItem(item.id)}>
+                            Remove
+                          </button>
+                        ) : null}
                       </div>
                     </form>
                   ) : null}

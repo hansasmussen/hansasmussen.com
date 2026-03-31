@@ -23,11 +23,8 @@ export default async function PrintsPage() {
     <PublicLayout mainClassName="prints-page" showPrints>
       <section className="prints-intro">
         <p className="eyebrow">Buy Prints</p>
-        <h1>Selected works available as prints.</h1>
-        <p className="prints-lede">
-          A curated selection of images available in small editions and printed on carefully chosen paper.
-          Sizes and stock vary from work to work.
-        </p>
+        <h1>{siteData.content.printsHeader}</h1>
+        <p className="prints-lede">{siteData.content.printsBody}</p>
       </section>
 
       <section className="prints-grid" aria-label="Print products">

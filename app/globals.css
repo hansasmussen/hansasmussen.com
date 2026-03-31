@@ -1474,7 +1474,7 @@ h2 {
 .prints-page {
   display: grid;
   gap: 34px;
-  width: min(100%, 1240px);
+  width: min(100%, 1320px);
 }
 
 .prints-intro {
@@ -1500,7 +1500,7 @@ h2 {
 .prints-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 40px 34px;
+  gap: 42px 36px;
 }
 
 .print-card {
@@ -1509,7 +1509,7 @@ h2 {
 }
 
 .print-card-media {
-  width: min(100%, 520px);
+  width: min(100%, 620px);
 }
 
 .print-card-media > img,
@@ -1521,7 +1521,7 @@ h2 {
 .print-card-copy {
   display: grid;
   gap: 12px;
-  max-width: 520px;
+  max-width: 620px;
 }
 
 .print-card-copy h2 {
@@ -1547,6 +1547,10 @@ h2 {
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
   font-size: 0.74rem;
   line-height: 1.7;
+}
+
+.print-card-technical {
+  margin-top: 12px;
 }
 
 .print-card-technical strong {
@@ -1580,6 +1584,14 @@ h2 {
   padding: 0;
 }
 
+.print-card-cta {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+}
+
 .print-card-options li {
   display: flex;
   justify-content: space-between;
@@ -1596,7 +1608,7 @@ h2 {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: min(100%, 520px);
+  width: min(100%, 620px);
 }
 
 .print-card-gallery-nav p {
