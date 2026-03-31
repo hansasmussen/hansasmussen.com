@@ -120,12 +120,14 @@ function renderPortfolioCard(item, index, onPreviewItem) {
   const hasJournalLink = !item.projectSlug && Boolean(item.journalSlug);
   const href = hasProjectLink ? `/work/${item.projectSlug}` : hasJournalLink ? `/journal/${item.journalSlug}` : null;
   const ctaLabel = hasProjectLink ? "See more images" : hasJournalLink ? "Read the journal" : "";
-  const hasPreviewAction = !href && typeof onPreviewItem === "function";
+  const hasPrintAction = !href && Boolean(item.print?.enabled);
+  const hasPreviewAction = !href && !hasPrintAction && typeof onPreviewItem === "function";
   const cardClassName = [
     "portfolio-card",
     href ? "portfolio-link-card" : "",
+    hasPrintAction ? "portfolio-print-card" : "",
     hasPreviewAction ? "portfolio-preview-card" : "",
-    item.print?.enabled ? "portfolio-print-enabled" : "",
+    href && item.print?.enabled ? "portfolio-print-enabled" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -147,6 +149,15 @@ function renderPortfolioCard(item, index, onPreviewItem) {
             <PortfolioMedia item={overviewItem} />
           </div>
         </Link>
+      ) : hasPrintAction ? (
+        <>
+          <div className="media-frame">
+            <PortfolioMedia item={overviewItem} />
+          </div>
+          <Link href="/prints" className="portfolio-print-center-link">
+            Buy limited print
+          </Link>
+        </>
       ) : hasPreviewAction ? (
         <button type="button" className="portfolio-preview-action" onClick={() => onPreviewItem(index)}>
           <div className="media-frame">
@@ -161,7 +172,7 @@ function renderPortfolioCard(item, index, onPreviewItem) {
           <PortfolioMedia item={overviewItem} />
         </div>
       )}
-      {item.print?.enabled ? (
+      {href && item.print?.enabled ? (
         <Link href="/prints" className="portfolio-print-badge">
           Buy limited print
         </Link>
