@@ -2929,7 +2929,7 @@ h2 {
 
   .intro.work-intro {
     max-width: 100%;
-    padding: 0 0 32px;
+    padding: 8px 0 32px;
   }
 
   .intro.work-intro .work-manifesto {
@@ -2995,7 +2995,7 @@ h2 {
   }
 
   .contact-layout {
-    padding-top: 0;
+    padding-top: 8px;
     gap: 40px;
   }
 
@@ -3004,7 +3004,13 @@ h2 {
   }
 
   .prints-intro {
+    padding-top: 8px;
     gap: 10px;
+  }
+
+  .project-overview,
+  .journal-page {
+    padding-top: 8px;
   }
 
   .site-header {
@@ -3084,6 +3090,10 @@ h2 {
   }
 
   .prints-intro h1 {
+    display: none;
+  }
+
+  .prints-intro .eyebrow {
     display: none;
   }
 
