@@ -112,8 +112,8 @@ insert into public.site_content (
   contact_paragraph_four
 )
 select
-  'A modern-day drifter, chasing photons like they owe rent — Dust on the lens, a roll of film on the ready. Out here, it’s light and motion. A filmic fever dream with digital echoes. Every click a whispered prayer to the gods of grain. Whether it’s celluloid or silicon, the chase stays the same: you, the light, and the beautiful mess in between.',
-  'The frame slows things down. A glance lingers, becomes something more. A bent sign, a flicker of symmetry, two strangers sharing a silent moment. The unnoticed comes into focus — Quiet tension. There’s a logic to the disorder, If you’re patient, it appears… then it’s gone.',
+  'A modern-day drifter, chasing photons like they owe rent - Dust on the lens, a roll of film on the ready. Out here, it’s light and motion. A filmic fever dream with digital echoes. Every click a whispered prayer to the gods of grain. Whether it’s celluloid or silicon, the chase stays the same: you, the light, and the beautiful mess in between.',
+  'The frame slows things down. A glance lingers, becomes something more. A bent sign, a flicker of symmetry, two strangers sharing a silent moment. The unnoticed comes into focus - Quiet tension. There’s a logic to the disorder, If you’re patient, it appears… then it’s gone.',
   'Let''s not make it complicated.',
   'I''m a fashion and lifestyle photographer based in Denmark, working across Europe chasing light, strong ideas, and honest visuals. I''m also part owner of PS Content, a full-service content production agency.',
   'Whether it''s a campaign, a concept, or something in-between, you''re welcome to get in touch directly through this portfolio or contact my booking manager, Amalie Danscher Asmussen.',
