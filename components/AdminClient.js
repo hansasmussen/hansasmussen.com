@@ -827,10 +827,6 @@ export function AdminClient({ initialSiteData }) {
           <div className="intro">
             <p className="eyebrow">Admin</p>
             <h1>Upload, reorder og preview layoutet live.</h1>
-            <p className="lede">
-              Det her er en lokal prototype. Billeder gemmes i browseren pa din maskine, sa den er bedst
-              til kuratering og workflow-test.
-            </p>
           </div>
 
           <p className="admin-status" aria-live="polite">
