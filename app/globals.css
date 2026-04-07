@@ -2902,10 +2902,11 @@ h2 {
   .public-sidebar-mobile-footer {
     margin-top: 34px;
     padding-bottom: 4px;
+    text-align: center;
   }
 
   .public-sidebar-mobile-footer .social-nav {
-    justify-content: flex-start;
+    justify-content: center;
     margin-left: 0;
     gap: 14px;
   }
@@ -2917,16 +2918,18 @@ h2 {
 
   .public-sidebar-mobile-footer .public-sidebar-meta {
     margin-top: 24px;
+    justify-items: center;
   }
 
   .public-sidebar-mobile-footer .public-sidebar-footer {
     margin-top: 24px;
     max-width: 100%;
+    text-align: center;
   }
 
   .intro.work-intro {
     max-width: 100%;
-    padding: 0 0 34px;
+    padding: 0 0 32px;
   }
 
   .intro.work-intro .work-manifesto {
@@ -2985,6 +2988,23 @@ h2 {
   .site-header {
     grid-template-columns: 1fr;
     align-items: flex-start;
+  }
+
+  .hero {
+    padding: 0 0 32px;
+  }
+
+  .contact-layout {
+    padding-top: 0;
+    gap: 40px;
+  }
+
+  .prints-page {
+    gap: 28px;
+  }
+
+  .prints-intro {
+    gap: 10px;
   }
 
   .site-header {
@@ -3052,6 +3072,19 @@ h2 {
 
   .public-mobile-nav {
     margin-top: 18px;
+  }
+
+  .hero-copy-centered,
+  .intro.work-intro .work-manifesto,
+  .contact-copy,
+  .contact-copy-body,
+  .prints-intro,
+  .prints-lede {
+    max-width: 100%;
+  }
+
+  .prints-intro h1 {
+    display: none;
   }
 
   .site-header {

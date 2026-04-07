@@ -19,6 +19,7 @@ export function PublicSidebar({ showPrints = false, variant = "desktop" }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuId = useId();
   const links = buildLinks(showPrints);
+  const mobileLinks = links.filter((link) => link.href !== "/prints");
 
   useEffect(() => {
     setIsOpen(false);
@@ -52,7 +53,7 @@ export function PublicSidebar({ showPrints = false, variant = "desktop" }) {
           className={`public-mobile-nav ${isOpen ? "is-open" : ""}`}
           aria-label="Primary navigation"
         >
-          {links.map((link) => {
+          {mobileLinks.map((link) => {
             const isActive =
               pathname === link.href || (link.href === "/work" && pathname.startsWith("/work"));
 
