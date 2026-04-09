@@ -241,18 +241,22 @@ a {
 .public-mobile-nav {
   display: none;
   margin-top: 22px;
+  width: 100%;
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
 
 .public-mobile-nav.is-open {
   display: grid;
-  gap: 14px;
+  gap: 22px;
 }
 
 .public-mobile-nav a {
+  display: block;
+  width: 100%;
+  padding: 6px 0;
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2999,8 +3003,7 @@ h2 {
   }
 
   .intro.work-intro {
-    max-width: 100%;
-    padding: 8px 0 32px;
+    display: none;
   }
 
   .intro.work-intro .work-manifesto {
@@ -3079,7 +3082,7 @@ h2 {
   }
 
   .contact-copy-heading,
-  .contact-copy-body p:first-child {
+  .contact-copy-body {
     display: none;
   }
 

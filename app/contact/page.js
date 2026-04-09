@@ -18,6 +18,7 @@ export default async function ContactPage() {
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
+  const mobileMessagePrompt = contactParagraphs.slice(1).join("\n\n");
 
   return (
     <PublicLayout showPrints={showPrints}>
@@ -31,7 +32,7 @@ export default async function ContactPage() {
               ))}
             </div>
           </div>
-          <ContactForm />
+          <ContactForm mobileMessagePrompt={mobileMessagePrompt} />
         </section>
       </div>
     </PublicLayout>

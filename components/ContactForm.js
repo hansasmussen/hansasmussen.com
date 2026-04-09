@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function ContactForm() {
+export function ContactForm({ mobileMessagePrompt = "" }) {
   const [status, setStatus] = useState("");
   const [statusKind, setStatusKind] = useState("idle");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMessageFocused, setIsMessageFocused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [startedAt] = useState(() => Date.now());
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const update = () => setIsMobile(mediaQuery.matches);
+
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
 
   return (
     <form
@@ -80,7 +91,18 @@ export function ContactForm() {
       </label>
       <label>
         Message (required)
-        <textarea name="message" rows="8" required />
+        <textarea
+          name="message"
+          rows="8"
+          placeholder={isMobile && !isMessageFocused ? mobileMessagePrompt : ""}
+          onFocus={() => setIsMessageFocused(true)}
+          onBlur={(event) => {
+            if (!event.currentTarget.value) {
+              setIsMessageFocused(false);
+            }
+          }}
+          required
+        />
       </label>
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Sending..." : "Send"}
