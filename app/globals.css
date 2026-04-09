@@ -254,7 +254,8 @@ a {
 .public-mobile-nav a {
   display: block;
   width: 100%;
-  padding: 6px 0;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
   font-size: 1rem;
   font-weight: 700;
@@ -264,6 +265,7 @@ a {
 
 .public-mobile-nav a.is-active {
   color: var(--text);
+  background: rgba(226, 87, 28, 0.06);
 }
 
 .mobile-intro-splash {
@@ -3020,6 +3022,10 @@ h2 {
 
   .portfolio-column {
     gap: 18px;
+  }
+
+  .work-gallery {
+    padding: 38px 0 56px;
   }
 
   .focused-gallery {
