@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FocusedAudioPlayer } from "@/components/FocusedAudioPlayer";
 import { PortfolioGrid } from "@/components/PortfolioGrid";
 
@@ -29,8 +29,9 @@ export function WorkExperience({ items, manifesto }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isMobile, setIsMobile] = useState(false);
 
-  const isFocused = searchParams.get("view") === "focused";
+  const isFocused = !isMobile && searchParams.get("view") === "focused";
   const focusedIndex = Math.max(0, Math.min(Number(searchParams.get("item") || 0), items.length - 1));
   const focusedItem = items[focusedIndex] || null;
 
@@ -69,6 +70,20 @@ export function WorkExperience({ items, manifesto }) {
   };
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const update = () => setIsMobile(mediaQuery.matches);
+
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile || searchParams.get("view") !== "focused") return;
+    setFocusedMode(false);
+  }, [isMobile, searchParams]);
+
+  useEffect(() => {
     if (!isFocused) return undefined;
 
     const handleKeyDown = (event) => {
@@ -98,7 +113,7 @@ export function WorkExperience({ items, manifesto }) {
       <section className="intro work-intro">
         {isFocused ? <div className="work-intro-overlay-lift" aria-hidden="true" /> : null}
         <p className="work-manifesto">{manifesto}</p>
-        <div className="work-view-actions">
+        <div className="work-view-actions" aria-hidden={isMobile ? "true" : undefined}>
           <button className="work-view-link" type="button" onClick={() => setFocusedMode(!isFocused, focusedIndex)}>
             {isFocused ? "Back to grid" : "Focused view"}
           </button>
@@ -137,7 +152,7 @@ export function WorkExperience({ items, manifesto }) {
             <PortfolioGrid
               items={items}
               layout="manual-columns"
-              onPreviewItem={(index) => setFocusedMode(true, index)}
+              onPreviewItem={isMobile ? undefined : (index) => setFocusedMode(true, index)}
             />
           </div>
         </section>

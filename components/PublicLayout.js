@@ -1,3 +1,4 @@
+import { MobileIntroSplash } from "@/components/MobileIntroSplash";
 import { PublicSidebar } from "@/components/PublicSidebar";
 
 export function PublicLayout({ children, mainClassName = "", showPrints = false }) {
@@ -5,6 +6,7 @@ export function PublicLayout({ children, mainClassName = "", showPrints = false 
 
   return (
     <div className="site-shell public-shell">
+      <MobileIntroSplash />
       <PublicSidebar variant="mobile-header" showPrints={showPrints} />
       <div className="public-layout">
         <PublicSidebar variant="desktop" showPrints={showPrints} />

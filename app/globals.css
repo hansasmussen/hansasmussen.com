@@ -17,6 +17,36 @@ html {
   scroll-behavior: smooth;
 }
 
+@keyframes mobileIntroCurtain {
+  0%,
+  83% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes mobileIntroLine {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  18%,
+  70% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
 body {
   margin: 0;
   background: var(--page-bg);
@@ -230,6 +260,10 @@ a {
 
 .public-mobile-nav a.is-active {
   color: var(--text);
+}
+
+.mobile-intro-splash {
+  display: none;
 }
 
 .public-main,
@@ -1754,6 +1788,14 @@ h2 {
   white-space: pre-line;
 }
 
+.contact-copy-body p {
+  margin: 0;
+}
+
+.contact-copy-body p + p {
+  margin-top: 1.4em;
+}
+
 .prints-page {
   display: grid;
   gap: 34px;
@@ -2881,6 +2923,35 @@ h2 {
 }
 
 @media (max-width: 900px) {
+  .mobile-intro-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 28px;
+    background: var(--page-bg);
+    animation: mobileIntroCurtain 6400ms ease forwards;
+  }
+
+  .mobile-intro-lines {
+    display: grid;
+    gap: 6px;
+    width: min(100%, 420px);
+    color: rgba(226, 87, 28, 0.82);
+    font-family: "Reenie Beanie", "Brush Script MT", cursive;
+    font-size: clamp(2rem, 10vw, 3.4rem);
+    line-height: 1.02;
+    text-align: center;
+  }
+
+  .mobile-intro-lines span {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: mobileIntroLine 4100ms ease forwards;
+    animation-delay: calc(520ms + (var(--line-index) * 560ms));
+  }
+
   .public-shell {
     padding: 20px 0 24px;
   }
@@ -2994,9 +3065,22 @@ h2 {
     padding: 0 0 32px;
   }
 
+  .home-main-content {
+    display: none;
+  }
+
+  .work-view-actions {
+    display: none;
+  }
+
   .contact-layout {
     padding-top: 8px;
     gap: 40px;
+  }
+
+  .contact-copy-heading,
+  .contact-copy-body p:first-child {
+    display: none;
   }
 
   .prints-page {

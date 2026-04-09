@@ -14,6 +14,10 @@ export const metadata = buildMetadata({
 export default async function ContactPage() {
   const siteData = await getSiteData();
   const showPrints = getPrintProducts(siteData).length > 0;
+  const contactParagraphs = String(siteData.content.contactBody || "")
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
 
   return (
     <PublicLayout showPrints={showPrints}>
@@ -21,7 +25,11 @@ export default async function ContactPage() {
         <section className="contact-layout">
           <div className="contact-copy">
             <h1 className="contact-copy-heading">{siteData.content.contactHeader}</h1>
-            <p className="contact-copy-body">{siteData.content.contactBody}</p>
+            <div className="contact-copy-body">
+              {contactParagraphs.map((paragraph, index) => (
+                <p key={`${index + 1}-${paragraph.slice(0, 16)}`}>{paragraph}</p>
+              ))}
+            </div>
           </div>
           <ContactForm />
         </section>

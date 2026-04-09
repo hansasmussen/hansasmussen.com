@@ -1,4 +1,5 @@
 import { Carousel } from "@/components/Carousel";
+import { MobileHomeRedirect } from "@/components/MobileHomeRedirect";
 import { PublicLayout } from "@/components/PublicLayout";
 import { getFeaturedSlides, getPrintProducts, getSiteData } from "@/lib/site-data";
 import { buildMetadata } from "@/lib/seo";
@@ -17,6 +18,7 @@ export default async function HomePage() {
 
   return (
     <PublicLayout showPrints={showPrints}>
+      <MobileHomeRedirect />
       <div className="home-main-content">
         <section className="hero">
           <div className="hero-copy hero-copy-centered">
