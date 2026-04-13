@@ -65,14 +65,12 @@ async function uploadFile(file, options = {}) {
     throw new Error("Upload preparation failed.");
   }
 
-  const formData = new FormData();
-  formData.append("cacheControl", "3600");
-  formData.append("", file);
-
   await new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.open("PUT", payload.signedUrl, true);
     request.setRequestHeader("x-upsert", "false");
+    request.setRequestHeader("content-type", file.type || "application/octet-stream");
+    request.setRequestHeader("cache-control", "3600");
 
     request.upload.onprogress = (event) => {
       if (!event.lengthComputable) return;
@@ -96,7 +94,7 @@ async function uploadFile(file, options = {}) {
       }
     };
 
-    request.send(formData);
+    request.send(file);
   });
 
   const supabase = createSupabaseBrowserClient();
