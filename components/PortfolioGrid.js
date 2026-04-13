@@ -1,36 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function PortfolioMedia({ item }) {
-  const videoRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
   const videoSource = item.videoPreview?.src || item.previewSrc || item.src;
 
   if (item.mediaType === "video") {
     return (
       <>
         <video
-          ref={videoRef}
           src={videoSource}
           aria-label={item.alt}
           playsInline
           muted
           loop
           autoPlay
-          controls={isHovered}
           preload="metadata"
-          onMouseEnter={() => {
-            setIsHovered(true);
-            videoRef.current?.play().catch(() => {});
-          }}
-          onMouseLeave={() => {
-            setIsHovered(false);
-            if (videoRef.current) {
-              videoRef.current.muted = true;
-            }
-          }}
         />
         <div className="portfolio-video-overlay" aria-hidden="true">
           <span className="portfolio-video-frame" />
@@ -125,8 +111,21 @@ function renderPortfolioCard(item, index, onPreviewItem) {
   };
   const hasProjectLink = Boolean(item.projectSlug);
   const hasJournalLink = !item.projectSlug && Boolean(item.journalSlug);
-  const href = hasProjectLink ? `/work/${item.projectSlug}` : hasJournalLink ? `/journal/${item.journalSlug}` : null;
-  const ctaLabel = hasProjectLink ? "See more images" : hasJournalLink ? "Read the journal" : "";
+  const hasExternalVideoLink = !hasProjectLink && !hasJournalLink && Boolean(item.videoPreview?.youtubeUrl);
+  const href = hasProjectLink
+    ? `/work/${item.projectSlug}`
+    : hasJournalLink
+      ? `/journal/${item.journalSlug}`
+      : hasExternalVideoLink
+        ? item.videoPreview.youtubeUrl
+        : null;
+  const ctaLabel = hasProjectLink
+    ? "See more images"
+    : hasJournalLink
+      ? "Read the journal"
+      : hasExternalVideoLink
+        ? "Watch full video"
+        : "";
   const hasPrintAction = !href && Boolean(item.print?.enabled);
   const hasPreviewAction = !href && !hasPrintAction && typeof onPreviewItem === "function";
   const cardClassName = [
@@ -152,11 +151,19 @@ function renderPortfolioCard(item, index, onPreviewItem) {
   return (
     <article {...cardProps}>
       {href ? (
-        <Link href={href} className="portfolio-link" data-cta={ctaLabel}>
-          <div className="media-frame">
-            <PortfolioMedia item={overviewItem} />
-          </div>
-        </Link>
+        hasExternalVideoLink ? (
+          <a href={href} className="portfolio-link" data-cta={ctaLabel} target="_blank" rel="noreferrer">
+            <div className="media-frame">
+              <PortfolioMedia item={overviewItem} />
+            </div>
+          </a>
+        ) : (
+          <Link href={href} className="portfolio-link" data-cta={ctaLabel}>
+            <div className="media-frame">
+              <PortfolioMedia item={overviewItem} />
+            </div>
+          </Link>
+        )
       ) : hasPrintAction ? (
         <>
           <div className="media-frame">

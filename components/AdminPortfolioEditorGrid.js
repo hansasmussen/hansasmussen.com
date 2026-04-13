@@ -247,6 +247,13 @@ export function AdminPortfolioEditorGrid({
                                 projectSlug: String(formData.get("projectSlug") || "") || null,
                                 alt: String(formData.get("alt") || "").trim(),
                                 journalSlug: String(formData.get("journalSlug") || "") || null,
+                                videoPreview:
+                                  current.mediaType === "video"
+                                    ? {
+                                        ...(current.videoPreview || {}),
+                                        youtubeUrl: String(formData.get("videoYoutubeUrl") || "").trim() || null,
+                                      }
+                                    : current.videoPreview,
                               }),
                         }));
                       }}
@@ -343,6 +350,15 @@ export function AdminPortfolioEditorGrid({
                           </label>
                           {item.mediaType === "video" ? (
                             <>
+                              <label>
+                                Full video URL
+                                <input
+                                  name="videoYoutubeUrl"
+                                  type="url"
+                                  defaultValue={item.videoPreview?.youtubeUrl || ""}
+                                  placeholder="https://www.youtube.com/watch?v=..."
+                                />
+                              </label>
                               <label className="admin-upload admin-inline-upload">
                                 <strong>{item.videoPreview?.src ? "Replace short" : "Upload short"}</strong>
                                 <span>Use a shorter looping cut in /work while keeping the full video behind it</span>
@@ -386,6 +402,7 @@ export function AdminPortfolioEditorGrid({
                                 videoPreview: {
                                   src: null,
                                   storagePath: null,
+                                  youtubeUrl: current.videoPreview?.youtubeUrl || null,
                                 },
                               }))
                             }
