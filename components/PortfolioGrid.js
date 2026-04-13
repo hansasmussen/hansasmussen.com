@@ -6,30 +6,37 @@ import { useEffect, useMemo, useRef, useState } from "react";
 function PortfolioMedia({ item }) {
   const videoRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
+  const videoSource = item.videoPreview?.src || item.previewSrc || item.src;
 
   if (item.mediaType === "video") {
     return (
-      <video
-        ref={videoRef}
-        src={item.src}
-        aria-label={item.alt}
-        playsInline
-        muted
-        loop
-        autoPlay
-        controls={isHovered}
-        preload="metadata"
-        onMouseEnter={() => {
-          setIsHovered(true);
-          videoRef.current?.play().catch(() => {});
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-          }
-        }}
-      />
+      <>
+        <video
+          ref={videoRef}
+          src={videoSource}
+          aria-label={item.alt}
+          playsInline
+          muted
+          loop
+          autoPlay
+          controls={isHovered}
+          preload="metadata"
+          onMouseEnter={() => {
+            setIsHovered(true);
+            videoRef.current?.play().catch(() => {});
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+            if (videoRef.current) {
+              videoRef.current.muted = true;
+            }
+          }}
+        />
+        <div className="portfolio-video-overlay" aria-hidden="true">
+          <span className="portfolio-video-frame" />
+          <span className="portfolio-video-marker">+</span>
+        </div>
+      </>
     );
   }
 
@@ -76,7 +83,7 @@ function measureItem(item) {
         });
       };
       video.onerror = () => resolve({ width: 1, height: 1.35 });
-      video.src = item.src;
+      video.src = item.videoPreview?.src || item.previewSrc || item.src;
       return;
     }
 
@@ -124,6 +131,7 @@ function renderPortfolioCard(item, index, onPreviewItem) {
   const hasPreviewAction = !href && !hasPrintAction && typeof onPreviewItem === "function";
   const cardClassName = [
     "portfolio-card",
+    item.mediaType === "video" ? "portfolio-video-card" : "",
     href ? "portfolio-link-card" : "",
     hasPrintAction ? "portfolio-print-card" : "",
     hasPreviewAction ? "portfolio-preview-card" : "",
@@ -163,9 +171,11 @@ function renderPortfolioCard(item, index, onPreviewItem) {
           <div className="media-frame">
             <PortfolioMedia item={overviewItem} />
           </div>
-          <span className="portfolio-preview-icon" aria-hidden="true">
-            +
-          </span>
+          {item.mediaType === "video" ? null : (
+            <span className="portfolio-preview-icon" aria-hidden="true">
+              +
+            </span>
+          )}
         </button>
       ) : (
         <div className="media-frame">

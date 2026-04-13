@@ -287,6 +287,10 @@ async function fileToPortfolioItem(file, uploadedAsset, options = {}) {
     storagePath: uploadedAsset.path || null,
     alt: "",
     mediaType: file.type.startsWith("video/") ? "video" : "image",
+    videoPreview: {
+      src: null,
+      storagePath: null,
+    },
     span: dimensions.width > dimensions.height ? "wide" : "single",
     focus: "center",
     analog: false,
@@ -578,6 +582,45 @@ export function AdminClient({ initialSiteData }) {
       setStatus(error instanceof Error ? `Alt generation failed: ${error.message}` : "Alt generation failed.");
     } finally {
       setAltingItemId(null);
+    }
+  };
+
+  const uploadVideoPreview = async (itemId, fileList) => {
+    const file = [...(fileList || [])].find((entry) => entry.type.startsWith("video/"));
+    const item = siteData.portfolioItems.find((entry) => entry.id === itemId);
+    if (!file || !item) {
+      setStatus("No short video selected.");
+      return;
+    }
+
+    setStatus(`Uploading short for ${item.title}...`);
+
+    try {
+      const uploadedAsset = await uploadFile(file, {
+        context: "portfolio",
+      });
+
+      await persist(
+        {
+          ...siteData,
+          portfolioItems: siteData.portfolioItems.map((entry) =>
+            entry.id === itemId
+              ? {
+                  ...entry,
+                  videoPreview: {
+                    src: uploadedAsset.src,
+                    storagePath: uploadedAsset.path || null,
+                  },
+                }
+              : entry
+          ),
+        },
+        `Short updated for ${item.title}.`
+      );
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? `Short upload failed: ${error.message}` : "Short upload failed."
+      );
     }
   };
 
@@ -974,6 +1017,7 @@ export function AdminClient({ initialSiteData }) {
                 removeItem={removeItem}
                 generateAltText={generateAltText}
                 altingItemId={altingItemId}
+                uploadVideoPreview={uploadVideoPreview}
                 editorMode="portfolio"
               />
             </section>
@@ -1176,6 +1220,7 @@ export function AdminClient({ initialSiteData }) {
                 removeItem={removeItem}
                 generateAltText={generateAltText}
                 altingItemId={altingItemId}
+                uploadVideoPreview={uploadVideoPreview}
                 editorMode="prints"
                 disablePrint={disablePrint}
                 printPaperOptions={printPaperOptions}

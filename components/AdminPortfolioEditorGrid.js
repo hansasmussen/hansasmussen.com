@@ -13,6 +13,7 @@ function sanitizeSlug(value) {
 function measureItem(item) {
   return new Promise((resolve) => {
     if (item.mediaType === "video") {
+      const videoSource = item.videoPreview?.src || item.previewSrc || item.src;
       const video = document.createElement("video");
       video.preload = "metadata";
       video.onloadedmetadata = () =>
@@ -21,7 +22,7 @@ function measureItem(item) {
           height: video.videoHeight || 1,
         });
       video.onerror = () => resolve({ width: 1, height: 1.35 });
-      video.src = item.src;
+      video.src = videoSource;
       return;
     }
 
@@ -92,7 +93,7 @@ function AdminDragHint() {
 
 function AdminPortfolioMedia({ item }) {
   if (item.mediaType === "video") {
-    return <video src={item.src} muted playsInline loop autoPlay preload="metadata" />;
+    return <video src={item.videoPreview?.src || item.previewSrc || item.src} muted playsInline loop autoPlay preload="metadata" />;
   }
 
   return <img src={item.src} alt={item.alt} loading="lazy" />;
@@ -107,6 +108,7 @@ export function AdminPortfolioEditorGrid({
   removeItem,
   generateAltText,
   altingItemId,
+  uploadVideoPreview,
   editorMode = "portfolio",
   disablePrint,
   printPaperOptions = [],
@@ -186,6 +188,7 @@ export function AdminPortfolioEditorGrid({
                       <strong>{item.title}</strong>
                       <span>
                         {item.mediaType === "video" ? "Video" : "Image"}
+                        {item.mediaType === "video" && item.videoPreview?.src ? " / Short" : ""}
                         {item.featured ? " / Carousel" : ""}
                       </span>
                     </div>
@@ -338,6 +341,22 @@ export function AdminPortfolioEditorGrid({
                             Journal slug
                             <input name="journalSlug" defaultValue={item.journalSlug || ""} />
                           </label>
+                          {item.mediaType === "video" ? (
+                            <>
+                              <label className="admin-upload admin-inline-upload">
+                                <strong>{item.videoPreview?.src ? "Replace short" : "Upload short"}</strong>
+                                <span>Use a shorter looping cut in /work while keeping the full video behind it</span>
+                                <input
+                                  type="file"
+                                  accept="video/*"
+                                  onChange={(event) => {
+                                    void uploadVideoPreview?.(item.id, event.target.files);
+                                    event.target.value = "";
+                                  }}
+                                />
+                              </label>
+                            </>
+                          ) : null}
                         </>
                       )}
                       <div className="admin-portfolio-card-actions">
@@ -356,6 +375,22 @@ export function AdminPortfolioEditorGrid({
                             onClick={() => updateItem(item.id, (current) => ({ ...current, featured: !current.featured }))}
                           >
                             {item.featured ? "In carousel" : "Carousel"}
+                          </button>
+                        ) : null}
+                        {!isPrintMode && item.mediaType === "video" && item.videoPreview?.src ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateItem(item.id, (current) => ({
+                                ...current,
+                                videoPreview: {
+                                  src: null,
+                                  storagePath: null,
+                                },
+                              }))
+                            }
+                          >
+                            Remove short
                           </button>
                         ) : null}
                         <button type="submit">Save</button>
