@@ -1891,9 +1891,9 @@ h2 {
 
 .print-card {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   align-content: start;
-  padding: 6px;
+  padding: 14px;
   border: 1px solid rgba(226, 87, 28, 0.12);
   background: rgba(255, 255, 255, 0.14);
 }
@@ -1921,7 +1921,7 @@ h2 {
 
 .print-card-copy {
   display: grid;
-  gap: 10px;
+  gap: 14px;
   width: 100%;
 }
 
@@ -1954,7 +1954,7 @@ h2 {
 }
 
 .print-card-technical {
-  margin-top: 14px;
+  margin-top: 18px;
 }
 
 .print-card-technical strong {
@@ -1993,9 +1993,9 @@ h2 {
 .print-card-cta {
   display: grid;
   gap: 12px;
-  margin-top: 18px;
-  padding: 16px 16px 14px;
-  border: 1px solid rgba(226, 87, 28, 0.12);
+  margin-top: 22px;
+  padding: 14px 0 0;
+  border-top: 1px solid rgba(226, 87, 28, 0.14);
 }
 
 .print-card-options li {
