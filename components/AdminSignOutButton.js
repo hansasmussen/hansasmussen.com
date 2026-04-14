@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
-export function AdminSignOutButton() {
+export function AdminSignOutButton({ className = "admin-reset" }) {
   const router = useRouter();
 
   return (
     <button
-      className="admin-reset"
+      className={className}
       type="button"
       onClick={async () => {
         const supabase = createSupabaseBrowserClient();

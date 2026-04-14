@@ -192,6 +192,60 @@ a {
   text-transform: lowercase;
 }
 
+.admin-main {
+  min-width: 0;
+}
+
+.admin-sidebar-utility {
+  display: grid;
+  gap: 6px;
+  margin-top: 34px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(226, 87, 28, 0.12);
+  border-bottom: 1px solid rgba(226, 87, 28, 0.12);
+}
+
+.admin-sidebar-label {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.admin-sidebar-email {
+  margin: 0;
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  overflow-wrap: anywhere;
+}
+
+.admin-signout-button {
+  justify-self: start;
+  margin-top: 6px;
+  border: 1px solid rgba(226, 87, 28, 0.16);
+  background: transparent;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 0;
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-mobile-nav .admin-sidebar-utility {
+  margin-top: 2px;
+  padding-top: 18px;
+}
+
 .public-mobile-header-bar {
   display: flex;
   align-items: flex-start;
@@ -1083,7 +1137,9 @@ h2 {
 }
 
 .admin-page {
-  display: block;
+  display: grid;
+  gap: 24px;
+  width: min(100%, 1380px);
 }
 
 .admin-auth-bar {
@@ -1137,6 +1193,11 @@ h2 {
 
 .admin-panel-section {
   display: block;
+}
+
+.admin-panel {
+  display: grid;
+  gap: 28px;
 }
 
 .admin-content-editor {

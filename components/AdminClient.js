@@ -863,7 +863,7 @@ export function AdminClient({ initialSiteData }) {
 
   return (
     <>
-      <main className="admin-page">
+      <section className="admin-page">
         <section className="admin-panel">
           <div className="intro">
             <p className="eyebrow">Admin</p>
@@ -1561,7 +1561,7 @@ export function AdminClient({ initialSiteData }) {
             </section>
           ) : null}
         </section>
-      </main>
+      </section>
 
     </>
   );

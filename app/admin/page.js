@@ -1,23 +1,16 @@
+import { AdminLayout } from "@/components/AdminLayout";
 import { AdminClient } from "@/components/AdminClient";
-import { AdminSignOutButton } from "@/components/AdminSignOutButton";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
 import { requireAdminUser } from "@/lib/auth";
-import { getSiteData } from "@/lib/site-data";
+import { getPrintProducts, getSiteData } from "@/lib/site-data";
 
 export default async function AdminPage() {
   const user = await requireAdminUser("/admin");
   const siteData = await getSiteData();
+  const showPrints = getPrintProducts(siteData).length > 0;
 
   return (
-    <div className="site-shell">
-      <SiteHeader includeAdmin />
-      <div className="admin-auth-bar">
-        <p>Signed in as {user.email}</p>
-        <AdminSignOutButton />
-      </div>
+    <AdminLayout userEmail={user.email} showPrints={showPrints}>
       <AdminClient initialSiteData={siteData} />
-      <SiteFooter />
-    </div>
+    </AdminLayout>
   );
 }
