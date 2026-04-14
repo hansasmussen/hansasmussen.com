@@ -54,6 +54,9 @@ function MockupSlide({ src, alt }) {
 
 export function PrintProductCard({ product }) {
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const hasMoreDetails = Boolean(product.description || product.technical);
 
   const slides = [
     {
@@ -103,15 +106,29 @@ export function PrintProductCard({ product }) {
       </div>
 
       <div className="print-card-copy">
-        <h2>{product.title}</h2>
-        {product.description ? <p className="print-card-description">{product.description}</p> : null}
-        {product.technical ? (
-          <div className="print-card-technical">
-            <p>
-              <strong>Technical</strong> {product.technical}
-            </p>
-          </div>
-        ) : null}
+        <div className="print-card-head">
+          <h2>{product.title}</h2>
+          {hasMoreDetails ? (
+            <button
+              type="button"
+              className="print-card-see-more"
+              onClick={() => setIsExpanded((current) => !current)}
+              aria-expanded={isExpanded}
+            >
+              {isExpanded ? "See less" : "See more"}
+            </button>
+          ) : null}
+        </div>
+        <div className={`print-card-details${isExpanded ? " is-expanded" : ""}`} aria-hidden={!isExpanded}>
+          {product.description ? <p className="print-card-description">{product.description}</p> : null}
+          {product.technical ? (
+            <div className="print-card-technical">
+              <p>
+                <strong>Technical</strong> {product.technical}
+              </p>
+            </div>
+          ) : null}
+        </div>
         <div className="print-card-cta">
           {product.paper ? <p className="print-card-paper">{product.paper}</p> : null}
           {product.sizeOptions.length ? (
