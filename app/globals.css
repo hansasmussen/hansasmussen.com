@@ -1853,44 +1853,54 @@ h2 {
 
 .prints-page {
   display: grid;
-  gap: 34px;
-  width: min(100%, 1320px);
+  gap: 42px;
+  width: min(100%, 1380px);
 }
 
 .prints-intro {
   display: grid;
-  gap: 14px;
-  max-width: 840px;
+  gap: 10px;
+  max-width: 980px;
 }
 
 .prints-intro h1 {
   margin: 0;
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: clamp(2.2rem, 3.8vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
 }
 
 .prints-lede {
   margin: 0;
-  max-width: 760px;
+  max-width: 820px;
   color: var(--muted);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.96rem;
-  line-height: 1.8;
+  font-size: 0.9rem;
+  line-height: 1.65;
   letter-spacing: 0.04em;
 }
 
 .prints-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 48px 36px;
+  gap: 28px 20px;
 }
 
 .print-card {
   display: grid;
-  gap: 18px;
+  gap: 12px;
   align-content: start;
+  padding: 6px;
+  border: 1px solid rgba(226, 87, 28, 0.12);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .print-card-media {
   width: 100%;
+  border: 1px solid rgba(226, 87, 28, 0.16);
 }
 
 .print-card-media > img {
@@ -1907,15 +1917,17 @@ h2 {
 
 .print-card-copy {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
 .print-card-copy h2 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -1923,8 +1935,8 @@ h2 {
   margin: 0;
   color: var(--muted);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.84rem;
-  line-height: 1.8;
+  font-size: 0.8rem;
+  line-height: 1.72;
   letter-spacing: 0.03em;
 }
 
@@ -1932,12 +1944,13 @@ h2 {
   margin: 0;
   color: var(--muted);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.74rem;
-  line-height: 1.7;
+  font-size: 0.64rem;
+  line-height: 1.55;
+  letter-spacing: 0.03em;
 }
 
 .print-card-technical {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .print-card-technical strong {
@@ -1955,38 +1968,42 @@ h2 {
 }
 
 .print-card-paper {
-  font-size: 0.84rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
 }
 
 .print-card-note,
 .print-card-placeholder {
-  font-size: 0.76rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
 }
 
 .print-card-options {
   list-style: none;
   display: grid;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
 }
 
 .print-card-cta {
   display: grid;
-  gap: 16px;
-  margin-top: 24px;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
+  gap: 12px;
+  margin-top: 18px;
+  padding: 16px 16px 14px;
+  border: 1px solid rgba(226, 87, 28, 0.12);
 }
 
 .print-card-options li {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
+  padding: 10px 12px;
+  background: var(--text);
+  color: var(--page-bg);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1995,12 +2012,18 @@ h2 {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: min(100%, 680px);
+  width: 100%;
+}
+
+.print-card-gallery-nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .print-card-gallery-nav p {
   margin: 0;
-  color: var(--muted);
+  color: rgba(226, 87, 28, 0.76);
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
@@ -2013,7 +2036,7 @@ h2 {
   color: var(--text);
   padding: 0;
   font-family: "Public Sans", Helvetica, Arial, sans-serif;
-  font-size: 1.1rem;
+  font-size: 0.96rem;
   line-height: 1;
   cursor: pointer;
 }

@@ -79,25 +79,27 @@ export function PrintProductCard({ product }) {
       </div>
 
       <div className="print-card-gallery-nav">
-        <button
-          type="button"
-          className="print-gallery-arrow"
-          onClick={() => setSlideIndex((current) => (current - 1 + slides.length) % slides.length)}
-          aria-label="Show previous print preview"
-        >
-          ←
-        </button>
-        <p>
-          {slideIndex + 1} / {slides.length}
-        </p>
-        <button
-          type="button"
-          className="print-gallery-arrow"
-          onClick={() => setSlideIndex((current) => (current + 1) % slides.length)}
-          aria-label="Show next print preview"
-        >
-          →
-        </button>
+        <div className="print-card-gallery-nav-group">
+          <button
+            type="button"
+            className="print-gallery-arrow"
+            onClick={() => setSlideIndex((current) => (current - 1 + slides.length) % slides.length)}
+            aria-label="Show previous print preview"
+          >
+            ←
+          </button>
+          <p>
+            {slideIndex + 1} / {slides.length}
+          </p>
+          <button
+            type="button"
+            className="print-gallery-arrow"
+            onClick={() => setSlideIndex((current) => (current + 1) % slides.length)}
+            aria-label="Show next print preview"
+          >
+            →
+          </button>
+        </div>
       </div>
 
       <div className="print-card-copy">
