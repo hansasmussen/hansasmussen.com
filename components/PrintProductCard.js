@@ -55,6 +55,8 @@ function MockupSlide({ src, alt }) {
 export function PrintProductCard({ product }) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const ratio = useImageRatio(product.src);
+  const isPortrait = ratio < 0.92;
 
   const hasMoreDetails = Boolean(product.description || product.technical);
 
@@ -73,7 +75,8 @@ export function PrintProductCard({ product }) {
 
   return (
     <article className="print-card">
-      <div className="print-card-media">
+      <div className={`print-card-media${isPortrait ? " is-portrait" : ""}`}>
+        {isPortrait ? <span className="print-card-badge">Portrait</span> : null}
         {currentSlide.type === "image" ? (
           <img src={product.src} alt={product.alt} loading="lazy" />
         ) : (
@@ -108,6 +111,13 @@ export function PrintProductCard({ product }) {
       <div className="print-card-copy">
         <div className="print-card-head">
           <h2>{product.title}</h2>
+          <div className={`print-card-summary${isExpanded ? " is-hidden" : ""}`}>
+            {product.description ? (
+              <p className="print-card-description-preview">{product.description}</p>
+            ) : (
+              <div className="print-card-description-preview is-empty" aria-hidden="true" />
+            )}
+          </div>
           {hasMoreDetails ? (
             <button
               type="button"

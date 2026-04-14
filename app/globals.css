@@ -1900,10 +1900,28 @@ h2 {
 }
 
 .print-card-media {
+  position: relative;
   width: 100%;
   aspect-ratio: 1.42;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.28);
+}
+
+.print-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 5px 8px;
+  border: 1px solid rgba(244, 241, 230, 0.58);
+  background: rgba(244, 241, 230, 0.14);
+  color: rgba(244, 241, 230, 0.92);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
 }
 
 .print-card-media > img {
@@ -1930,7 +1948,7 @@ h2 {
 .print-card-head {
   display: grid;
   gap: 8px;
-  min-height: 64px;
+  min-height: 108px;
   align-content: start;
 }
 
@@ -1956,6 +1974,32 @@ h2 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.print-card-summary {
+  min-height: 2.8em;
+}
+
+.print-card-summary.is-hidden {
+  display: none;
+}
+
+.print-card-description-preview {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.print-card-description-preview.is-empty {
+  visibility: hidden;
 }
 
 .print-card-details {
