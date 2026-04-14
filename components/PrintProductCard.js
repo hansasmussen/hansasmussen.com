@@ -118,8 +118,13 @@ export function PrintProductCard({ product }) {
             <ul className="print-card-options">
               {product.sizeOptions.map((option) => (
                 <li key={`${product.id}-${option.label}`}>
-                  <span>{option.label}</span>
-                  <span>{formatPrice(option.price)}</span>
+                  <button type="button" className="print-card-option-button">
+                    <span className="print-card-option-meta">
+                      <span>{option.label}</span>
+                      <span>{formatPrice(option.price)}</span>
+                    </span>
+                    <span className="print-card-option-cta">Order print</span>
+                  </button>
                 </li>
               ))}
             </ul>
