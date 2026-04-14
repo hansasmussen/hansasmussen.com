@@ -1200,6 +1200,75 @@ h2 {
   gap: 28px;
 }
 
+.admin-carousel-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-carousel-card {
+  display: grid;
+  grid-template-columns: 42px 112px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-carousel-card.is-dragging {
+  opacity: 0.45;
+}
+
+.admin-carousel-card.is-drop-target {
+  border-color: rgba(226, 87, 28, 0.48);
+  background: rgba(226, 87, 28, 0.06);
+}
+
+.admin-carousel-order {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(226, 87, 28, 0.18);
+  color: var(--text);
+  font-family: "Public Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-carousel-card img,
+.admin-carousel-card video {
+  width: 112px;
+  height: 76px;
+  object-fit: cover;
+}
+
+.admin-carousel-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-carousel-copy strong,
+.admin-carousel-copy span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-carousel-copy span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.admin-carousel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .admin-content-editor {
   display: grid;
   gap: 18px;
@@ -3465,6 +3534,15 @@ h2 {
 
   .admin-project-media-item {
     grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .admin-carousel-card {
+    grid-template-columns: 36px 88px minmax(0, 1fr);
+  }
+
+  .admin-carousel-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
   }
 
   .admin-item-actions {

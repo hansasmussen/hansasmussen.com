@@ -305,15 +305,53 @@ export function AdminClient({ initialSiteData }) {
   const [queueItems, setQueueItems] = useState([]);
   const [projectQueueItems, setProjectQueueItems] = useState([]);
   const [draggedId, setDraggedId] = useState(null);
+  const [carouselDraggedId, setCarouselDraggedId] = useState(null);
+  const [carouselDropTargetId, setCarouselDropTargetId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [rewritingProjectSlug, setRewritingProjectSlug] = useState(null);
   const [altingItemId, setAltingItemId] = useState(null);
 
   const content = siteData.content || {};
 
+  const syncCarouselOrder = (nextSiteData) => {
+    const featuredIds = new Set(
+      (nextSiteData.portfolioItems || [])
+        .filter((item) => item.featured)
+        .map((item) => String(item.id))
+    );
+
+    const requested = (Array.isArray(nextSiteData.content?.carouselOrder) ? nextSiteData.content.carouselOrder : [])
+      .map((item) => String(item || "").trim())
+      .filter((item) => item && featuredIds.has(item));
+
+    const seen = new Set();
+    const carouselOrder = [];
+
+    requested.forEach((id) => {
+      if (seen.has(id)) return;
+      seen.add(id);
+      carouselOrder.push(id);
+    });
+
+    (nextSiteData.portfolioItems || []).forEach((item) => {
+      const id = String(item.id || "");
+      if (!item.featured || !id || seen.has(id)) return;
+      seen.add(id);
+      carouselOrder.push(id);
+    });
+
+    return {
+      ...nextSiteData,
+      content: {
+        ...(nextSiteData.content || {}),
+        carouselOrder,
+      },
+    };
+  };
+
   const persist = async (nextSiteData, message) => {
     const previousSiteData = siteData;
-    const normalized = normalizeSiteData(nextSiteData);
+    const normalized = normalizeSiteData(syncCarouselOrder(nextSiteData));
     setSiteData(normalized);
     setIsSaving(true);
 
@@ -352,6 +390,9 @@ export function AdminClient({ initialSiteData }) {
   const availablePrintItems = siteData.portfolioItems.filter(
     (item) => item.mediaType === "image" && !item.print?.enabled
   );
+  const carouselItems = (content.carouselOrder || [])
+    .map((id) => siteData.portfolioItems.find((item) => String(item.id) === String(id)))
+    .filter(Boolean);
   const printPaperOptions = content.printPaperOptions || [];
   const printSizeOptions = content.printSizeOptions || [];
   const visibleQueueItems = queueItems.filter((item) => item.status !== "Added");
@@ -875,7 +916,7 @@ export function AdminClient({ initialSiteData }) {
           </p>
 
           <div className="admin-tabs" role="tablist" aria-label="Admin sections">
-            {["home", "portfolio", "prints", "projects", "journal", "contact"].map((tab) => (
+            {["home", "carousel", "portfolio", "prints", "projects", "journal", "contact"].map((tab) => (
               <button
                 key={tab}
                 className={`admin-tab ${activeTab === tab ? "is-active" : ""}`}
@@ -891,7 +932,7 @@ export function AdminClient({ initialSiteData }) {
             <section className="admin-content-editor">
               <div className="admin-section-heading">
                 <p className="eyebrow">Home</p>
-                <h2>Edit the front page intro and choose carousel images in the portfolio tab.</h2>
+                <h2>Edit the front page intro.</h2>
               </div>
               <form
                 className="admin-copy-form"
@@ -921,12 +962,99 @@ export function AdminClient({ initialSiteData }) {
             </section>
           ) : null}
 
+          {activeTab === "carousel" ? (
+            <section className="admin-panel-section is-active">
+              <section className="admin-content-editor">
+                <div className="admin-section-heading">
+                  <p className="eyebrow">Carousel</p>
+                  <h2>Drag featured images into the exact order they should appear on the front page.</h2>
+                </div>
+                {carouselItems.length ? (
+                  <div className="admin-carousel-list" aria-label="Carousel order">
+                    {carouselItems.map((item, index) => (
+                      <article
+                        key={item.id}
+                        className={`admin-carousel-card ${carouselDraggedId === item.id ? "is-dragging" : ""} ${carouselDropTargetId === item.id && carouselDraggedId !== item.id ? "is-drop-target" : ""}`}
+                        draggable
+                        onDragStart={() => setCarouselDraggedId(item.id)}
+                        onDragEnd={() => {
+                          setCarouselDraggedId(null);
+                          setCarouselDropTargetId(null);
+                        }}
+                        onDragEnter={(event) => {
+                          event.preventDefault();
+                          if (carouselDraggedId && carouselDraggedId !== item.id) {
+                            setCarouselDropTargetId(item.id);
+                          }
+                        }}
+                        onDragOver={(event) => {
+                          event.preventDefault();
+                          if (carouselDraggedId && carouselDraggedId !== item.id) {
+                            setCarouselDropTargetId(item.id);
+                          }
+                        }}
+                        onDragLeave={() => {
+                          if (carouselDropTargetId === item.id) setCarouselDropTargetId(null);
+                        }}
+                        onDrop={() => {
+                          if (!carouselDraggedId || carouselDraggedId === item.id) return;
+                          const nextOrder = [...(content.carouselOrder || [])];
+                          const fromIndex = nextOrder.findIndex((entry) => entry === carouselDraggedId);
+                          const toIndex = nextOrder.findIndex((entry) => entry === item.id);
+                          if (fromIndex === -1 || toIndex === -1) return;
+                          const [moved] = nextOrder.splice(fromIndex, 1);
+                          nextOrder.splice(toIndex, 0, moved);
+                          setCarouselDraggedId(null);
+                          setCarouselDropTargetId(null);
+                          void persist(
+                            {
+                              ...siteData,
+                              content: {
+                                ...content,
+                                carouselOrder: nextOrder,
+                              },
+                            },
+                            "Carousel order saved."
+                          );
+                        }}
+                      >
+                        <span className="admin-carousel-order">{index + 1}</span>
+                        <img src={item.mediaType === "video" ? item.videoPreview?.src || item.src : item.src} alt={item.alt} loading="lazy" />
+                        <div className="admin-carousel-copy">
+                          <strong>{item.title}</strong>
+                          <span>{item.mediaType === "video" ? "Video" : "Image"}</span>
+                        </div>
+                        <div className="admin-carousel-actions">
+                          <span className="admin-portfolio-drag-hint" aria-hidden="true">Drag</span>
+                          <button
+                            className="admin-reset"
+                            type="button"
+                            onClick={() =>
+                              updateItem(item.id, (current) => ({
+                                ...current,
+                                featured: false,
+                              }))
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="admin-status">No images are in the carousel yet. Mark them as `Carousel` in the portfolio tab first.</p>
+                )}
+              </section>
+            </section>
+          ) : null}
+
           {activeTab === "portfolio" ? (
             <section className="admin-panel-section is-active">
               <section className="admin-content-editor">
                 <div className="admin-section-heading">
                   <p className="eyebrow">Portfolio</p>
-                  <h2>Edit the portfolio intro, upload images and choose what appears in the carousel.</h2>
+                  <h2>Edit the portfolio intro, upload images and choose what appears in the work grid.</h2>
                 </div>
                 <form
                   className="admin-copy-form"
